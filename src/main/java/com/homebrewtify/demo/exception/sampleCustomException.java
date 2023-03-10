@@ -1,5 +1,5 @@
 package com.homebrewtify.demo.exception;
-
+//커스텀 오류 샘플
 public class sampleCustomException extends RuntimeException{
     public sampleCustomException() {
         super();
