@@ -24,6 +24,9 @@ public enum BaseResponseStatus {
     // Common
     RESPONSE_ERROR(false, 3000, "값을 불러오는데 실패하였습니다."),
 
+
+    POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력해주세요."),
+
     /**
      * 4000 : Database, Server 오류
      */
