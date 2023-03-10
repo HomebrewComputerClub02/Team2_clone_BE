@@ -1,6 +1,7 @@
-package com.homebrewtify.demo.src.user;
+package com.homebrewtify.demo.service;
 
 
+import com.homebrewtify.demo.repository.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

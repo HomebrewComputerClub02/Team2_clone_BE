@@ -1,4 +1,5 @@
-package com.homebrewtify.demo.src.user.model;
+package com.homebrewtify.demo.entity;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,10 +8,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class GetUserRes {  // 회원 조회 응답
+public class User {
     private int userIdx;
     private String name;
     private String nickName;
+    private String phone;
     private String email;
-
+    private String password;
 }

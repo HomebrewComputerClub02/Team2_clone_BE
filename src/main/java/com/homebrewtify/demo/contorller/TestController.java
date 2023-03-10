@@ -1,4 +1,4 @@
-package com.homebrewtify.demo.src.test;
+package com.homebrewtify.demo.contorller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
