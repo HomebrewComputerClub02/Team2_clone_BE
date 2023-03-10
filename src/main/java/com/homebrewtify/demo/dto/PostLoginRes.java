@@ -1,4 +1,4 @@
-package com.homebrewtify.demo.src.user.model;
+package com.homebrewtify.demo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

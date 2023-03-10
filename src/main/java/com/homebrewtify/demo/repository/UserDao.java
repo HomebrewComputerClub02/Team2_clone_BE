@@ -1,7 +1,7 @@
-package com.homebrewtify.demo.src.user;
+package com.homebrewtify.demo.repository;
 
 
-import com.homebrewtify.demo.src.user.model.GetUserRes;
+import com.homebrewtify.demo.dto.GetUserRes;
 import org.springframework.stereotype.Repository;
 
 @Repository

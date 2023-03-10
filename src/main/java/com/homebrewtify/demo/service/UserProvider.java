@@ -1,8 +1,9 @@
-package com.homebrewtify.demo.src.user;
+package com.homebrewtify.demo.service;
 
 
 import com.homebrewtify.demo.config.BaseException;
-import com.homebrewtify.demo.src.user.model.GetUserRes;
+import com.homebrewtify.demo.repository.UserDao;
+import com.homebrewtify.demo.dto.GetUserRes;
 import org.springframework.stereotype.Service;
 
 import static com.homebrewtify.demo.config.BaseResponseStatus.DATABASE_ERROR;

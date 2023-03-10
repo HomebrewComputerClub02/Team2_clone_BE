@@ -1,9 +1,10 @@
-package com.homebrewtify.demo.src.user;
+package com.homebrewtify.demo.contorller;
 
 import com.homebrewtify.demo.config.BaseException;
 import com.homebrewtify.demo.config.BaseResponse;
-import com.homebrewtify.demo.config.BaseResponseStatus;
-import com.homebrewtify.demo.src.user.model.GetUserRes;
+import com.homebrewtify.demo.service.UserProvider;
+import com.homebrewtify.demo.service.UserService;
+import com.homebrewtify.demo.dto.GetUserRes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
