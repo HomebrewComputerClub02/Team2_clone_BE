@@ -4,4 +4,16 @@ server:
 spring:
   application:
     name: demo
+  datasource:
+    url: jdbc:mysql://localhost:3306/homebrewtify
+    username: homebrew
+    password: homebrew
+    driver-class: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+
+
 
