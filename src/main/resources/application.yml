@@ -9,6 +9,9 @@ spring:
     username: homebrew
     password: homebrew
     driver-class: com.mysql.cj.jdbc.Driver
+  batch:
+    jdbc:
+      initialize-schema: always
   jpa:
     hibernate:
       ddl-auto: update
