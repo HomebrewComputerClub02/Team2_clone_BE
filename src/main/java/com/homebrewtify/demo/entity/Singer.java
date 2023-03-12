@@ -1,13 +1,18 @@
 package com.homebrewtify.demo.entity;
 
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Singer {
     @Id
     @Column(name = "singer_id")
@@ -17,4 +22,7 @@ public class Singer {
 
     private String singerName;
     private String imgUrl;
+
+    @OneToMany(mappedBy = "singer")
+    private Set<SingerAlbum> singerAlbums=new HashSet<>();
 }
