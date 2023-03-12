@@ -1,5 +1,6 @@
 package com.homebrewtify.demo.entity;
 
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -8,6 +9,11 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Music {
     @Id
     @Column(name = "music_id")
@@ -17,6 +23,8 @@ public class Music {
 
     private String title;
     private String lyrics;
+    //spotify open api trackID
+    private String trackId;
 
     @ManyToOne
     @JoinColumn(name = "album_id")
