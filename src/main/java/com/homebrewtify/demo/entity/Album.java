@@ -26,5 +26,5 @@ public class Album {
     private String imgUrl;
 
     @OneToMany(mappedBy = "album")
-    private Set<SingerAlbum> singers = new HashSet<>();
+    private Set<SingerAlbum> albumSingers = new HashSet<>();
 }

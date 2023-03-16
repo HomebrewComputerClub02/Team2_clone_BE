@@ -51,11 +51,9 @@ public class MusicFeature {
     // n/4박자 를 의미한다
     Long timeSignature;
 
-    @OneToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Music music;
+//    @OneToOne
+//    @OnDelete(action = OnDeleteAction.CASCADE)
+//    private Music music;
+    //음악을 조회하며 음악 특징을 조히하는 경우가 더 많을 것이므로 외래키 주인을 음악으로 설정
 
-    @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Genre genre;
 }

@@ -36,11 +36,10 @@ public class Music {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Singer singer;
 
-    @ManyToMany
-    @JoinTable(
-            name = "music_genre",
-            joinColumns = {@JoinColumn(name = "music_id", referencedColumnName = "music_id")},
-            inverseJoinColumns = {@JoinColumn(name = "genre_id", referencedColumnName = "genre_id")})
-    private Set<Genre> genreSet;
+    @OneToOne
+    @JoinColumn(name="feature_id")
+    private MusicFeature feature;
+
+    //장르를 OneToMany로 가져야 하나 ??
 
 }
