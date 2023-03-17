@@ -49,4 +49,14 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+    /**
+     * 회원가입 API
+     */
+
+
+    /**
+     * 로그인 API
+     */
+
+
 }
