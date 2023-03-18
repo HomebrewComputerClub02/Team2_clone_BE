@@ -20,21 +20,21 @@ public class CsvEntity {
     private String artists;
     private String albumName;
     private String trackName;
-    private String popularity;
-    private String duration;
+    private Long popularity;
+    private Long duration;
     private String explicit;
-    private String dance;
-    private String energy;
-    private String keyValue;
-    private String loudness;
-    private String mode;
-    private String speech;
-    private String acoustic;
-    private String instrument;
-    private String live;
-    private String valence;
-    private String tempo;
-    private String timeSignature;
+    private Double dance;
+    private Double energy;
+    private Long keyValue;
+    private Double loudness;
+    private Long mode;
+    private Double speech;
+    private Double acoustic;
+    private Double instrument;
+    private Double live;
+    private Double valence;
+    private Double tempo;
+    private Long timeSignature;
     private String trackGenre;
 
 }
