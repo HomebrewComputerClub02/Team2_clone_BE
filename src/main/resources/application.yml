@@ -5,7 +5,7 @@ spring:
   application:
     name: demo
   datasource:
-    url: jdbc:mysql://localhost:3306/homebrewtify
+    url: jdbc:mysql://localhost:3306/homebrewtify?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&autoReconnect=true&rewriteBatchedStatements=true
     username: homebrew
     password: homebrew
     driver-class: com.mysql.cj.jdbc.Driver
@@ -14,8 +14,14 @@ spring:
       initialize-schema: always
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 10000
+        order_inserts: true
+        order_updates: true
 
 
 
