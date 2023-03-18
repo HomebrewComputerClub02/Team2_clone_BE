@@ -4,12 +4,12 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Genre {
@@ -22,5 +22,10 @@ public class Genre {
     private String genreName;
 
     @OneToMany(mappedBy = "genre")
-    private List<MusicGenre> genreMusic;
+    private List<Music> musicList=new ArrayList<>();
+
+    @Builder(builderClassName = "Init",builderMethodName = "init")
+    public Genre(String genreName){
+        this.genreName=genreName;
+    }
 }

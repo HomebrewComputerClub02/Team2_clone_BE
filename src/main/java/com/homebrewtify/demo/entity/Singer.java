@@ -2,27 +2,50 @@ package com.homebrewtify.demo.entity;
 
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Singer {
+public class Singer implements Persistable<String>{
     @Id
     @Column(name = "singer_id")
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String singerId;
+    //@GeneratedValue(strategy = GenerationType.AUTO)
+    private String id;
 
     private String singerName;
     private String imgUrl;
 
     @OneToMany(mappedBy = "singer")
-    private Set<SingerAlbum> singerAlbums=new HashSet<>();
+    private List<Album> albums=new ArrayList<>();
+
+    @OneToMany(mappedBy = "singer")
+    private List<MusicSinger> singerMusicList=new ArrayList<>();
+
+    @Builder(builderClassName = "Init",builderMethodName = "init")
+    public Singer(String singerName){
+        //this.id= UUID.randomUUID().toString();
+        this.singerName = singerName;
+    }
+
+    @Override
+    public boolean isNew() {
+        return isNew;
+    }
+
+    @Transient
+    private boolean isNew=true;
+
+    @PrePersist
+    @PostLoad
+    void makeNotNew(){
+        this.isNew=false;
+    }
 }

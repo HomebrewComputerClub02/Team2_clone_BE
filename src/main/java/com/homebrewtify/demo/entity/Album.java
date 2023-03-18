@@ -2,29 +2,54 @@ package com.homebrewtify.demo.entity;
 
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Album {
+public class Album implements Persistable<String>{
     @Id
     @Column(name = "album_id")
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String albumId;
+    //@GeneratedValue(strategy = GenerationType.)
+    private String id;
 
     private String albumName;
     private String releaseDate;
 
     private String imgUrl;
 
-    @OneToMany(mappedBy = "album")
-    private Set<SingerAlbum> albumSingers = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "singer_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Singer singer;
+
+    @Builder(builderClassName = "Init",builderMethodName = "init")
+    public Album(String albumName,Singer singer){
+        singer.getAlbums().add(this);
+        this.albumName=albumName;
+        this.singer=singer;
+        //this.id= UUID.randomUUID().toString();
+    }
+    @Override
+    public boolean isNew() {
+        return isNew;
+    }
+
+    @Transient
+    private boolean isNew=true;
+
+    @PrePersist
+    @PostLoad
+    void makeNotNew(){
+        this.isNew=false;
+    }
 }
