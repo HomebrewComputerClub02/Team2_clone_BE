@@ -17,24 +17,26 @@ public class FileReadJobConfig {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final CsvReader csvReader;
-    private final CsvWriter csvWriter;
-    private static final int chunkSize = 1;
+    //private final CsvWriter csvWriter;
+    private final CsvWriter2 csvWriter2;
+    //private final CsvWriter3 csvWriter3;
+    private static final int chunkSize = 50000;
     //Job : 하나의 배치 작업 단위
     //하나의 Job안에는 여러 Step이 존재하고 Step안에 Reader,Writer등이 포함된다
     @Bean
     public Job csvFileItemReaderJob() {
-        return jobBuilderFactory.get("DataFileItemReaderJob")
+        return jobBuilderFactory.get("Job30")
                 .start(csvFileItemReaderStep())
                 .build();
     }
 
     @Bean
     public Step csvFileItemReaderStep() {
-        return stepBuilderFactory.get("DataFileItemReaderStep")
+        return stepBuilderFactory.get("Step30")
                 //CsvEntity를 Reader에서 읽어오고 CsvEntity를 writer에게 넘겨줄 것이다
                 .<CsvEntity, CsvEntity>chunk(chunkSize)
                 .reader(csvReader.csvFileItemReader())
-                .writer(csvWriter)
+                .writer(csvWriter2).allowStartIfComplete(true)
                 .build();
     }
 }
