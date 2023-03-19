@@ -14,7 +14,7 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Album implements Persistable<String>{
+public class Album{
     @Id
     @Column(name = "album_id")
     @GeneratedValue(generator = "uuid")
@@ -37,19 +37,5 @@ public class Album implements Persistable<String>{
         singer.getAlbums().add(this);
         this.albumName=albumName;
         this.singer=singer;
-        //this.id= UUID.randomUUID().toString();
-    }
-    @Override
-    public boolean isNew() {
-        return isNew;
-    }
-
-    @Transient
-    private boolean isNew=true;
-
-    @PrePersist
-    @PostLoad
-    void makeNotNew(){
-        this.isNew=false;
     }
 }

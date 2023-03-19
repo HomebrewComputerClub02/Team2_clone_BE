@@ -12,7 +12,7 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Singer implements Persistable<String>{
+public class Singer{
     @Id
     @Column(name = "singer_id")
     @GeneratedValue(generator = "uuid")
@@ -33,19 +33,5 @@ public class Singer implements Persistable<String>{
     public Singer(String singerName){
         //this.id= UUID.randomUUID().toString();
         this.singerName = singerName;
-    }
-
-    @Override
-    public boolean isNew() {
-        return isNew;
-    }
-
-    @Transient
-    private boolean isNew=true;
-
-    @PrePersist
-    @PostLoad
-    void makeNotNew(){
-        this.isNew=false;
     }
 }
