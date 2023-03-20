@@ -35,3 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+*.yml
+application-oauth.yml
+
+## secret ##
+/config/secret/Secret.java

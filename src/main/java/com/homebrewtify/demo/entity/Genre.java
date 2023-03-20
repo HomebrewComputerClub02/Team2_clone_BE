@@ -3,15 +3,13 @@ package com.homebrewtify.demo.entity;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Genre {
@@ -22,4 +20,12 @@ public class Genre {
     private String genreId;
 
     private String genreName;
+
+    @OneToMany(mappedBy = "genre")
+    private List<Music> musicList=new ArrayList<>();
+
+    @Builder(builderClassName = "Init",builderMethodName = "init")
+    public Genre(String genreName){
+        this.genreName=genreName;
+    }
 }
