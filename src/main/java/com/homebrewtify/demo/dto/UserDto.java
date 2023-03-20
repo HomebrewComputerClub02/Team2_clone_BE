@@ -22,14 +22,14 @@ public class UserDto {
     @Builder
     public static class LoginRes{ // 로그인 응답
         private final String jwt;
-        private Long userIdx; // 유저 고유값
+        private Long userId; // 유저 고유값
         private String email; // 유저 이메일
 
     }
 
     @Getter
     @Builder
-    @NoArgsConstructor(access = AccessLevel.MODULE.PROTECTED)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @AllArgsConstructor
     public static class SignUpReq{ // 회원가입 요청
         // 이메일
@@ -67,8 +67,10 @@ public class UserDto {
     @Getter
     public static class SignUpRes{ // 회원가입 응답
         private String jwt;
-        private Long userIdx;
+        private Long userId;
         private String email;
+        private String nickname;
+        private String gender;
 
     }
 
