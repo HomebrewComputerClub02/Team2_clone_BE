@@ -16,10 +16,9 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-  security:
-    oauth2:
-      client:
-        
+  config:
+    import: application-ouath.yml
+
 
 
 
