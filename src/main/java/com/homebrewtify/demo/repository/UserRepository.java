@@ -3,6 +3,16 @@ package com.homebrewtify.demo.repository;
 import com.homebrewtify.demo.entity.Singer;
 import com.homebrewtify.demo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepository extends JpaRepository<User,String> {
+import java.util.Optional;
+
+@Repository
+public interface UserRepository extends JpaRepository<User,Long> {
+
+
+ //   Optional<User> findUserByEmailAndStatus(String email); // 이메일로 유저
+    boolean existsByEmail(String email); // 이메일 중복 확인
+
+
 }

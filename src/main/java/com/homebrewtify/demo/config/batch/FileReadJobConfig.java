@@ -37,7 +37,7 @@ public class FileReadJobConfig {
                 //CsvEntity를 Reader에서 읽어오고 CsvEntity를 writer에게 넘겨줄 것이다
                 .<CsvEntity, CsvEntity>chunk(chunkSize)
                 .reader(csvReader.csvFileItemReader())
-                .writer(csvWriter4).allowStartIfComplete(true) //배포 시 이거 없애야 함(아니면 서버 돌릴 때 마다 이 작업 반복)
+                .writer(csvWriter4).allowStartIfComplete(false) //배포 시 이거 없애야 함(아니면 서버 돌릴 때 마다 이 작업 반복)
                 .build();
     }
 }

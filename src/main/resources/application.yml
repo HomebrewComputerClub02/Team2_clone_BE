@@ -4,11 +4,15 @@ server:
 spring:
   application:
     name: demo
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/homebrewtify?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&autoReconnect=true&rewriteBatchedStatements=true
+#    username: homebrew
+#    password: homebrew
+#    driver-class: com.mysql.cj.jdbc.Driver
   datasource:
-    url: jdbc:mysql://localhost:3306/homebrewtify?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&autoReconnect=true&rewriteBatchedStatements=true
-    username: homebrew
-    password: homebrew
-    driver-class: com.mysql.cj.jdbc.Driver
+    url: jdbc:h2:tcp://localhost/~/test
+    driver-class-name: org.h2.Driver
+    username: sa
   batch:
     jdbc:
       initialize-schema: always
@@ -22,7 +26,6 @@ spring:
           batch_size: 10000
         order_inserts: true
         order_updates: true
-
-
-
+config:
+  import: application-ouath.yml
 
