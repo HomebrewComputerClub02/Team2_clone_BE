@@ -33,7 +33,7 @@ public class UserService {
      * 회원가입 처리
      */
     public UserDto.SignUpRes join(UserDto.SignUpReq signUpReq) throws BaseException {
-        if(userRepository.existsUserByEmailAndStatus(signUpReq.getEmail())){ // 이메일 중복 확인
+        if(userRepository.existsByEmail(signUpReq.getEmail())){ // 이메일 중복 확인
             throw new BaseException(BaseResponseStatus.POST_USERS_EXISTS_EMAIL);
         }
 
