@@ -9,9 +9,8 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UpperGenre {
+public class GetAllGenreRes{
     private String name;
-    private List<String> genres;
     private String color;
     private String imgUrl;
 }
