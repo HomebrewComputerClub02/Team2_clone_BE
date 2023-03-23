@@ -1,17 +1,14 @@
-package com.homebrewtify.demo.contorller;
+package com.homebrewtify.demo.controller;
 
 import com.homebrewtify.demo.config.BaseException;
 import com.homebrewtify.demo.config.BaseResponse;
 import com.homebrewtify.demo.dto.UserDto;
 import com.homebrewtify.demo.service.UserService;
-import com.homebrewtify.demo.dto.GetUserRes;
 import com.homebrewtify.demo.utils.JwtService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
-import static com.homebrewtify.demo.config.BaseResponseStatus.*;
 
 @Slf4j
 @RestController
