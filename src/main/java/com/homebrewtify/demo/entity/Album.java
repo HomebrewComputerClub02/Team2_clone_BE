@@ -27,7 +27,7 @@ public class Album{
 
     private String imgUrl;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "singer_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Singer singer;
