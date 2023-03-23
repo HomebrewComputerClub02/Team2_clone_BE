@@ -64,6 +64,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
 
+	//ListPartion
+	implementation group: 'com.google.guava', name: 'guava', version: '19.0'
+
+
 }
 
 tasks.named('test') {
