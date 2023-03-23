@@ -27,7 +27,7 @@ public class Music {
     //spotify open api trackID
     private String trackId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "album_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Album album;
@@ -37,11 +37,11 @@ public class Music {
     private List<MusicSinger> musicSingerList=new ArrayList<>();
 
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="feature_id")
     private MusicFeature feature;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="genre_id")
     private Genre genre;
 
@@ -57,5 +57,7 @@ public class Music {
         genre.getMusicList().add(this);
         this.genre=genre;
     }
+
+
 
 }
