@@ -1,4 +1,4 @@
-package com.homebrewtify.demo.contorller;
+package com.homebrewtify.demo.controller;
 
 import com.homebrewtify.demo.dto.MusicDto;
 import com.homebrewtify.demo.service.MusicService;
