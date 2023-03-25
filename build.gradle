@@ -44,7 +44,7 @@ dependencies {
 	//runtimeOnly ('mysql:mysql-connector-java') //mysql8
 
 	// oauth2, security
-	implementation('org.springframework.boot:spring-boot-starter-security')
+//	implementation('org.springframework.boot:spring-boot-starter-security')
 //	implementation 'org.springframework.boot:spring-boot-starter-ouath2-client'
 
 	// validation
@@ -62,6 +62,10 @@ dependencies {
 	runtimeOnly 'com.h2database:h2'
 	// JDBC
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+
+
+	//ListPartion
+	implementation group: 'com.google.guava', name: 'guava', version: '19.0'
 
 
 }

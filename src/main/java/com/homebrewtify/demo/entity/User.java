@@ -8,12 +8,12 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@Setter
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
+@Table(name = "users")
 public class User {
-    @Id
+    @Id //pk
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -25,6 +25,5 @@ public class User {
     private String gender;
     private String email;
     private String password;
-
 
 }

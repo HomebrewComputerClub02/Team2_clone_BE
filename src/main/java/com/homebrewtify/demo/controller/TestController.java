@@ -1,4 +1,4 @@
-package com.homebrewtify.demo.contorller;
+package com.homebrewtify.demo.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,16 +8,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/test")
 public class TestController {
 
-    @Autowired
-    public TestController(){}
 
-
-    @ResponseBody
-    @RequestMapping("")
-    public String getAll(){
+    @GetMapping("/test")
+    public String test(){
         System.out.println("테스트");
 
         return "Success Test";
