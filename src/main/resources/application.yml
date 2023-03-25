@@ -4,21 +4,21 @@ server:
 spring:
   application:
     name: demo
-#  datasource:
-#    url: jdbc:mysql://localhost:3306/homebrewtify?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&autoReconnect=true&rewriteBatchedStatements=true
-#    username: homebrew
-#    password: homebrew
-#    driver-class: com.mysql.cj.jdbc.Driver
   datasource:
-    url: jdbc:h2:tcp://localhost/~/test
-    driver-class-name: org.h2.Driver
-    username: sa
+    url: jdbc:mysql://localhost:3306/homebrewtify?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&autoReconnect=true&rewriteBatchedStatements=true
+    username: homebrew
+    password: homebrew
+    driver-class: com.mysql.cj.jdbc.Driver
+#  datasource:
+#    url: jdbc:h2:tcp://localhost/~/test;MODE=MySQL
+#    driver-class-name: org.h2.Driver
+#    username: sa
   batch:
     jdbc:
       initialize-schema: always
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update # update / create : 애플리케이션을 시작할 때 데이터베이스를 초기화하고 다시 테이블 생성
     show-sql: true
     properties:
       hibernate:
@@ -26,6 +26,7 @@ spring:
           batch_size: 10000
         order_inserts: true
         order_updates: true
+        format_sql: true # 실행되는 query 보여줌.
 config:
   import: application-ouath.yml
 

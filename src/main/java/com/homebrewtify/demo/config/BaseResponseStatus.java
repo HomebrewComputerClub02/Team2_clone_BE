@@ -29,6 +29,8 @@ public enum BaseResponseStatus {
 
     POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력해주세요."),
 
+    FAILED_TO_LOGIN(false, 3014, "가입된 유저가 아닙니다."),
+
     /**
      * 4000 : Database, Server 오류
      */

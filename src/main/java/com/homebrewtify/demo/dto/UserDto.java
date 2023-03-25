@@ -15,7 +15,7 @@ public class UserDto {
         @Email
         @NotBlank
         private String email; // 이메일
-        private String passWord; // 비번
+        private String password; // 비번
     }
 
     @Getter
