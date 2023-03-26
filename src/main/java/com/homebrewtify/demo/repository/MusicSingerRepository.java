@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface MusicSingerRepository extends JpaRepository<MusicSinger,String> {
-    List<MusicSinger> findBySinger(Singer singer);
+    List<MusicSinger> findWithMusicBySinger(Singer singer);
 }
