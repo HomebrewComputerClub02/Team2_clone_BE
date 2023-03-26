@@ -44,7 +44,7 @@ dependencies {
 	//runtimeOnly ('mysql:mysql-connector-java') //mysql8
 
 	// oauth2, security
-//	implementation('org.springframework.boot:spring-boot-starter-security')
+	implementation('org.springframework.boot:spring-boot-starter-security')
 //	implementation 'org.springframework.boot:spring-boot-starter-ouath2-client'
 
 	// validation
