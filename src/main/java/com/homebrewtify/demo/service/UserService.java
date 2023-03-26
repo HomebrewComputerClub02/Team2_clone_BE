@@ -8,10 +8,14 @@ import com.homebrewtify.demo.dto.UserDto;
 import com.homebrewtify.demo.entity.User;
 import com.homebrewtify.demo.repository.UserRepository;
 import com.homebrewtify.demo.utils.JwtService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
+import java.util.Optional;
 
+@Slf4j
 @Service
 @Transactional(rollbackOn = BaseException.class)
 public class UserService {
@@ -38,6 +42,10 @@ public class UserService {
         }
 
         User mappedUser = mapper.map(signUpReq,User.class);
+        Optional<User> tt = Optional.ofNullable(mappedUser);
+        if(tt.isEmpty())
+            System.out.println("Null");
+        System.out.println("mappedUser.getEmail()+\" / \"+  = " + mappedUser.getEmail() + " / " + mappedUser.getBirth());
         User user = userRepository.save(mappedUser);
 
        String jwt = jwtService.createJwt(user.getUserId()); // 해당 유저의 jwt 토큰 생성
@@ -53,6 +61,32 @@ public class UserService {
     /**
      * 로그인 처리
      */
+    public UserDto.LoginRes login(UserDto.LoginReq loginReq) throws BaseException{
+      //  String email = loginReq.getEmail();
+         Optional<User> userByEmail = userRepository.findUserByEmail(loginReq.getEmail());
+//        if(userByEmail.isEmpty()){ // 존재하는 이메일인지 확인
+//            throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+//        }
+        log.info("로그인 잘되는지 확인중 --- 이메일 : {}",loginReq.getEmail());
+        log.info("로그인 잘되는지 확인중 --- 비번 : {}",loginReq.getPassword());
+        boolean userByEmailAndPassword = userRepository.existsByEmailAndPassword(loginReq.getEmail() , loginReq.getPassword());
+        if(!userByEmailAndPassword){ // 존재하는 유저인지 확인
+
+            throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+        }
+        System.out.println("** 로그인 확인 **");
+        System.out.println(userByEmailAndPassword);
+        System.out.println("** 로그인 확인 **");
+        log.info("로그인 잘되는지 확인중 --- : {}",userByEmailAndPassword);
+
+        User user = userByEmail.get();
+        String jwt = jwtService.createJwt(user.getUserId());
+        return UserDto.LoginRes.builder()
+                .jwt(jwt)
+                .userId(user.getUserId())
+                .email(user.getEmail())
+                .build();
+    }
 
 
 }

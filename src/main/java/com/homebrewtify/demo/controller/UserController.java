@@ -33,6 +33,10 @@ public class UserController {
      */
      @PostMapping("/signup")
      public BaseResponse<UserDto.SignUpRes> createUser(@RequestBody @Valid UserDto.SignUpReq signUpReq){
+         log.info("회원가입 정보 : ={}",signUpReq);
+         log.info("회원가입 정보 - email ={}",signUpReq.getEmail());
+         log.info("회원가입 정보 - password ={}",signUpReq.getPassword());
+         log.info("회원가입 정보 - birth ={}",signUpReq.getBirth());
          try{
                 UserDto.SignUpRes result = userService.join(signUpReq);
                 return new BaseResponse<>(result);
@@ -45,13 +49,20 @@ public class UserController {
 
     /**
      * 로그인 API
-     *
      */
     @PostMapping("/login")
-    public String login(@RequestBody UserDto.LoginReq loginReq){
+    public BaseResponse<UserDto.LoginRes> login(@RequestBody @Valid UserDto.LoginReq loginReq){
         log.info("로그인 정보:={}",loginReq);
-        // 로그인 처
-        return "로그인 성공";
+        log.info("로그인 정보- email ={}",loginReq.getEmail());
+        log.info("로그인 정보- password ={}",loginReq.getPassword());
+        try{
+            UserDto.LoginRes result = userService.login(loginReq);
+            return new BaseResponse<>(result);
+
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
     }
 
 }

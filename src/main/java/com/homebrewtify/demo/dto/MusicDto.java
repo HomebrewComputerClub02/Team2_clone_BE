@@ -12,9 +12,9 @@ public class MusicDto {
 
         //?
         private String genreName;
-        List<PlayList> playlists;
-
-        List<PlayList> randomPlaylists;
+//        List<PlayList> playlists;
+//
+//        List<PlayList> randomPlaylists;
     }
     @Builder
     @Getter
