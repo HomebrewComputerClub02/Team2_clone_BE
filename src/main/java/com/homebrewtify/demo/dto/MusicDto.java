@@ -7,8 +7,17 @@ import java.util.List;
 
 public class MusicDto {
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class LikeRes{
+        private String userName;
+        private List<MusicListDto> musicList;
+
+    }
+    @Data
     public static class HomeRes {
         private List<Result> resultList=new ArrayList<>();
+        //TODO: 랜덤 플레이리스트 3개 정도 더 추가 필요
     }
     @Data
     @AllArgsConstructor
@@ -31,20 +40,10 @@ public class MusicDto {
 
         //디스코 그래피 (앨범 리스트만)
         private List<AlbumDto> albumList;
-        //피처링(플레이리스트형태)
-        //그냥 피처링한 곡을 모아서 줘야 하나..?
 
-
-        //피처링, 팬들이 좋아하는 다른 음악 , 참여 앨, 발견 위치
-        //피처링은 가능은 한데 힘들고
-
-        //팬들이 좋아하는거
-        // 불가능 user 추천관련
 
         //참여 앨범
         private List<AlbumDto> joinAlbumList;
-        //발견위치
-        //불가능..
     }
 
     @Builder
@@ -63,6 +62,9 @@ public class MusicDto {
     public static class MusicListDto {
         private String trackId;
         private String title;
+
+        @Builder.Default
+        private Long seconds=-1L;
         private List<MusicSingerDto> singerList;
         //가수이름, 가수 id
     }

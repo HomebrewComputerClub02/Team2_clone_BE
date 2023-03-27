@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -27,6 +28,8 @@ public class MusicService {
     private final MusicSingerRepository musicSingerRepository;
 
     private final PlayRecordRepository playRecordRepository;
+
+    private final LikeMusicRepository likeMusicRepository;
 
     public AlbumRes getAlbumInfo(String albumId){
         Optional<Album> optAlbum = albumRepository.findById(albumId);
@@ -91,7 +94,7 @@ public class MusicService {
     public List<AlbumDto> getJoinAlbumBySinger(Singer singer){
         List<MusicSinger> bySinger = musicSingerRepository.findWithMusicBySinger(singer);
         Optional<Singer> withAlbumsById = singerRepository.findWithAlbumsById(singer.getId());
-        if(withAlbumsById.isEmpty()){
+        if(!withAlbumsById.isPresent()){
             //throw error
             log.error("Invalid singer");
             return null;
@@ -257,5 +260,73 @@ public class MusicService {
         playRecordRepository.deleteAllById(invalidList);
 
         return res;
+    }
+
+    @Transactional
+    public LikeMusic saveLike(Long userId, String musicId){
+        User user=getUser(userId);
+
+        Optional<Music> optMusic = musicRepository.findById(musicId);
+        if(!optMusic.isPresent()){
+            //throw error
+            log.error("Invalid music ID");
+            return null;
+        }
+        Optional<LikeMusic> byMusicAndUser = likeMusicRepository.findByMusicAndUser(optMusic.get(), user);
+        if(byMusicAndUser.isPresent()){
+            //이미 저장되어 있는 경우 사용자가 저장된 음악을 다시 저장하는 경우는 발생할 수 없으므로 error
+            log.error("Invalid Save Attempt");
+            return null;
+        }
+
+        LikeMusic likeMusic = new LikeMusic();
+        likeMusic.setUser(user);
+        likeMusic.setMusic(optMusic.get());
+        likeMusic.setLikeDate(LocalDateTime.now());
+        return likeMusicRepository.save(likeMusic);
+
+    }
+    @Transactional
+    public void deleteLike(Long userId, String musicId){
+        User user=getUser(userId);
+
+        Optional<Music> optMusic = musicRepository.findById(musicId);
+        if(!optMusic.isPresent()){
+            //throw error
+            log.error("Invalid music ID");
+            return;
+        }
+        likeMusicRepository.deleteByUserAndMusic(user, optMusic.get());
+    }
+    public LikeRes getLikeMusicRes(Long userId){
+        User user=getUser(userId);
+
+        List<LikeMusic> withMusicByUser = likeMusicRepository.findWithMusicByUser(user);
+        LikeRes likeRes=new LikeRes();
+        likeRes.setUserName(user.getNickname());
+
+
+        List<MusicListDto> musicListDtoList=new ArrayList<>();
+        withMusicByUser.forEach(likeMusic->{
+
+            //TODO: 지연로딩 발생할 지점 ( 나중에 네이티브 쿼리를 짜든 해야 할 듯..)
+            List<MusicSinger> musicSingerList = likeMusic.getMusic().getMusicSingerList();
+
+            List<MusicSingerDto> msDtoList=new ArrayList<>();
+            musicSingerList.forEach(musicSinger ->
+                msDtoList.add(MusicSingerDto.builder()
+                        .singerName(musicSinger.getSinger().getSingerName()).singerId(musicSinger.getSinger().getId())
+                        .build()
+                )
+            );
+
+
+            Long seconds = Duration.between(likeMusic.getLikeDate(), LocalDateTime.now()).getSeconds();
+            MusicListDto build = MusicListDto.builder().trackId(likeMusic.getMusic().getTrackId())
+                    .title(likeMusic.getMusic().getTitle()).seconds(seconds).singerList(msDtoList).build();
+            musicListDtoList.add(build);
+        });
+        likeRes.setMusicList(musicListDtoList);
+        return likeRes;
     }
 }
