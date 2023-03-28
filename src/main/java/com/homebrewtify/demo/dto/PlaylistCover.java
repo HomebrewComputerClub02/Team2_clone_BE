@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class PlaylistCover{
-    private String id;
+    private String id;  //playlist id
     private String name;
     private String coverImgUrl;
 }

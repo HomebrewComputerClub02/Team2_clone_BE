@@ -3,6 +3,7 @@ package com.homebrewtify.demo.service;
 import com.homebrewtify.demo.dto.GetAllGenreRes;
 import com.homebrewtify.demo.dto.PlaylistCover;
 import com.homebrewtify.demo.dto.UpperGenre;
+import com.homebrewtify.demo.entity.Playlist;
 import com.homebrewtify.demo.repository.PlaylistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,29 @@ public class GenreService {
     }
 
     public PlaylistCover[] getPlaylistCoversByGenre(String genre){
-        playlistRepository.findByUser_UserIdAndName(null, "genre");
+        List<String> genres = null;
+        List<PlaylistCover> result = new ArrayList<>();
+
+        //uppergenre의 하위장르들 모두 genres에 저장하기
+        for (UpperGenre ele : genreLists) {
+            if(ele.getName().equals(genre)){
+                genres = ele.getGenres();
+                break;
+            }
+        }
+
+        for(String gen : genres){
+            List<Playlist> genPlaylist = playlistRepository.findByUser_UserIdAndName(null, gen);
+            if(!genPlaylist.isEmpty()){
+                Playlist pl = genPlaylist.get(0);
+
+                result.add(new PlaylistCover(pl.getPlaylistId(), pl.getName(), ));
+            }else{
+
+            }
+        }
+
+
 
         return new PlaylistCover[]{new PlaylistCover("","dd", "url")};
     }
