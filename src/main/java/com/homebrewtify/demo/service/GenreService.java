@@ -72,7 +72,7 @@ public class GenreService {
             if(!genPlaylist.isEmpty()){
                 Playlist pl = genPlaylist.get(0);
 
-                result.add(new PlaylistCover(pl.getPlaylistId(), pl.getName(), ));
+//                result.add(new PlaylistCover(pl.getPlaylistId(), pl.getName(), ));
             }else{
 
             }
