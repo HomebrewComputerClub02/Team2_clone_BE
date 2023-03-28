@@ -1,6 +1,8 @@
 package com.homebrewtify.demo.service;
 
 import com.google.common.collect.Lists;
+import com.homebrewtify.demo.config.BaseException;
+import com.homebrewtify.demo.config.BaseResponseStatus;
 import com.homebrewtify.demo.entity.*;
 import com.homebrewtify.demo.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -82,27 +84,21 @@ public class MusicService {
         return build;
     }
 
-    private Singer getSinger(String singerId) {
-        Optional<Singer> byId = singerRepository.findById(singerId);
-        if(!byId.isPresent()){
-            //추후 throw err
-            log.error("Invalid singer Id : "+ singerId);
-        }
-        return byId.get();
+    private Singer getSinger(String singerId)  {
+        Singer byId = singerRepository.findById(singerId)
+                .orElseThrow(()->new BaseException(BaseResponseStatus.INVALID_SINGER_ID));
+        return byId;
     }
 
 
-    public List<AlbumDto> getJoinAlbumBySinger(Singer singer){
+    public List<AlbumDto> getJoinAlbumBySinger(Singer singer) {
         List<MusicSinger> bySinger = musicSingerRepository.findWithMusicBySinger(singer);
-        Optional<Singer> withAlbumsById = singerRepository.findWithAlbumsById(singer.getId());
-        if(!withAlbumsById.isPresent()){
-            //throw error
-            log.error("Invalid singer");
-            return null;
-        }
+        //조회 대상이 없으면 error
+        Singer withAlbumsById = singerRepository.findWithAlbumsById(singer.getId())
+                .orElseThrow(()->new BaseException(BaseResponseStatus.INVALID_SINGER_ID));
 
         Map<String, String> albumIdMap=new HashMap<>();
-        withAlbumsById.get().getAlbums().forEach(a->
+        withAlbumsById.getAlbums().forEach(a->
             albumIdMap.put(a.getId(),a.getAlbumName())
         );
 
@@ -140,8 +136,6 @@ public class MusicService {
     @Transactional
     public PlayRecord saveRecentPlay(String type, Long userId, String dataId){
         User user = getUser(userId);
-
-        if (user == null) return null;
         PlayType pType;
         if(type.equals("SONG")){
             pType=PlayType.SONG;
@@ -155,14 +149,12 @@ public class MusicService {
         List<PlayRecord> playRecentList = playRecordRepository.findAllByUserOrderByPlayDate(user);
         for (PlayRecord playRecord : playRecentList) {
             if(playRecord.getType().equals(pType)&&playRecord.getDataId().equals(dataId)){
-                log.info("Found duplicated Play Record");
+                log.info("Found duplicated Play Record will touch time");
                 //현재 저장할 PLay가 이미 존재하므로 시간만 touch하고 return
                 playRecord.setPlayDate(LocalDateTime.now());
                 return playRecord;
             }
         }
-
-
 
         //만약 현재 play가 중복되지 않았다면 지정한 갯수(5개)를 초과하는지 체크하고 초과 시 FIFO
         log.info("user's recent count:"+playRecentList.size());
@@ -178,24 +170,19 @@ public class MusicService {
     }
 
     private User getUser(Long userId) {
-        Optional<User> byId = userRepository.findById(userId);
-        if(!byId.isPresent()){
-            //throw err
-            log.error("User not found");
-            return null;
-        }
-        User user = byId.get();
-        return user;
+        User byId = userRepository.findById(userId)
+                .orElseThrow(()->new BaseException(BaseResponseStatus.INVALID_USER_ID));
+        return byId;
     }
     private Album getAlbum(String albumId) {
-        Optional<Album> byId = albumRepository.findById(albumId);
-        if(!byId.isPresent()){
-            //throw err
-            log.error("User not found");
-            return null;
-        }
-        Album album = byId.get();
-        return album;
+        Album byId = albumRepository.findById(albumId)
+                .orElseThrow(()->new BaseException(BaseResponseStatus.INVALID_ALBUM_ID));
+        return byId;
+    }
+    private Music getMusic(String musicId) {
+        Music byId = musicRepository.findById(musicId)
+                .orElseThrow(()->new BaseException(BaseResponseStatus.INVALID_MUSIC_ID));
+        return byId;
     }
     @Transactional
     public HomeRes getRecentPlayListByUser(Long userId){
@@ -274,25 +261,17 @@ public class MusicService {
     }
 
     @Transactional
-    public LikeMusic saveLike(Long userId, String musicId){
+    public LikeMusic saveLike(Long userId, String musicId) {
         User user=getUser(userId);
+        Music music = getMusic(musicId);
+        //중복 저장 시 error (이미 있으면 error)
+        likeMusicRepository.findByMusicAndUser(music, user)
+                .ifPresent(a->{throw new BaseException(BaseResponseStatus.INVALID_SAVE_ATTEMPT);});
 
-        Optional<Music> optMusic = musicRepository.findById(musicId);
-        if(!optMusic.isPresent()){
-            //throw error
-            log.error("Invalid music ID");
-            return null;
-        }
-        Optional<LikeMusic> byMusicAndUser = likeMusicRepository.findByMusicAndUser(optMusic.get(), user);
-        if(byMusicAndUser.isPresent()){
-            //이미 저장되어 있는 경우 사용자가 저장된 음악을 다시 저장하는 경우는 발생할 수 없으므로 error
-            log.error("Invalid Save Attempt");
-            return null;
-        }
 
         LikeMusic likeMusic = new LikeMusic();
         likeMusic.setUser(user);
-        likeMusic.setMusic(optMusic.get());
+        likeMusic.setMusic(music);
         likeMusic.setLikeDate(LocalDateTime.now());
         return likeMusicRepository.save(likeMusic);
 
@@ -300,14 +279,8 @@ public class MusicService {
     @Transactional
     public void deleteLike(Long userId, String musicId){
         User user=getUser(userId);
-
-        Optional<Music> optMusic = musicRepository.findById(musicId);
-        if(!optMusic.isPresent()){
-            //throw error
-            log.error("Invalid music ID");
-            return;
-        }
-        likeMusicRepository.deleteByUserAndMusic(user, optMusic.get());
+        Music music = getMusic(musicId);
+        likeMusicRepository.deleteByUserAndMusic(user, music);
     }
     public LikeRes getLikeMusicRes(Long userId){
         User user=getUser(userId);
@@ -346,13 +319,10 @@ public class MusicService {
         User user=getUser(userId);
         Album album = getAlbum(albumId);
 
-        Optional<FollowAlbum> any = user.getFollowAlbumList().stream().filter(followAlbum -> followAlbum.getAlbum().equals(album))
-                .findAny();
-        if(any.isPresent()){
-            //이미 팔로우 한 앨범을 다시 팔로우 하는 경우
-            log.error("Invalid Attempt to Follow Album");
-            return null;
-        }
+        //이미 팔로우 한 앨범을 다시 팔로우 하는 경우 error
+        user.getFollowAlbumList().stream().filter(followAlbum -> followAlbum.getAlbum().equals(album))
+                .findAny().ifPresent(a->{throw  new BaseException(BaseResponseStatus.INVALID_SAVE_ATTEMPT);});
+
 
         FollowAlbum follow=new FollowAlbum();
         follow.createFollowAlbum(user,album);
@@ -362,14 +332,11 @@ public class MusicService {
     public FollowSinger addFollowSinger(Long userId, String singerId){
         User user=getUser(userId);
         Singer singer = getSinger(singerId);
+        //이미 팔로우 한 가수를 다시 팔로우 하는 경우
+        user.getFollowSingerList().stream().filter(followSinger ->
+                followSinger.getSinger().equals(singer)).findAny()
+                .ifPresent(a->{throw new BaseException(BaseResponseStatus.INVALID_SAVE_ATTEMPT);});
 
-        Optional<FollowSinger> any = user.getFollowSingerList().stream().filter(followSinger ->
-                followSinger.getSinger().equals(singer)).findAny();
-        if(any.isPresent()){
-            //이미 팔로우 한 가수를 다시 팔로우 하는 경우
-            log.error("Invalid Attempt to Follow Singer");
-            return null;
-        }
 
         FollowSinger follow=new FollowSinger();
         follow.createFollowSinger(user,singer);
