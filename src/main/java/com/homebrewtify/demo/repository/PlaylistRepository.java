@@ -9,5 +9,6 @@ public interface PlaylistRepository extends JpaRepository <Playlist, String> {
 
     List<Playlist> findByUser_UserId(Long userId);
 
+    //user_id와 플레이리스트 이름으로 조회
     List<Playlist> findByUser_UserIdAndName(Long userId, String name);
 }
