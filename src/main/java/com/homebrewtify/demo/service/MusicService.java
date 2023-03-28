@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.homebrewtify.demo.dto.MusicDto.*;
 
@@ -31,15 +32,11 @@ public class MusicService {
 
     private final LikeMusicRepository likeMusicRepository;
 
-    public AlbumRes getAlbumInfo(String albumId){
-        Optional<Album> optAlbum = albumRepository.findById(albumId);
-        if(!optAlbum.isPresent()){
-            log.error("Invalid album Id: "+albumId);
-            //추후 에러 throw
+    private final FollowAlbumRepository followAlbumRepository;
+    private final FollowSingerRepository followSingerRepository;
 
-            return null;
-        }
-        Album album=optAlbum.get();
+    public AlbumRes getAlbumInfo(String albumId){
+        Album album=getAlbum(albumId);
         List<Music> musicList = musicRepository.findByAlbum(album);
 
         List<MusicListDto> musicDtoList = getMusicListDtos(musicList);
@@ -53,13 +50,9 @@ public class MusicService {
 
 
     public SingerRes getSingerInfo(String singerId){
-        Optional<Singer> byId = singerRepository.findById(singerId);
-        if(!byId.isPresent()){
-            //추후 throw err
-            log.error("Invalid singer Id : "+singerId);
-        }
+        Singer singer = getSinger(singerId);
         //해당 가수의 앨범 list
-        List<Album> bySinger = albumRepository.findBySinger(byId.get());
+        List<Album> bySinger = albumRepository.findBySinger(singer);
         List<Music> musicList=new ArrayList<>();
         List<Music> popularMusicList;
         List<AlbumDto> albumDtoList=new ArrayList<>();
@@ -82,13 +75,21 @@ public class MusicService {
 
 
         //참여 앨범 찾기 (본인 앨범 제외)
-        List<AlbumDto> joinAlbumBySinger = getJoinAlbumBySinger(byId.get());
-        SingerRes build = SingerRes.builder().singerName(byId.get().getSingerName())
+        List<AlbumDto> joinAlbumBySinger = getJoinAlbumBySinger(singer);
+        SingerRes build = SingerRes.builder().singerName(singer.getSingerName())
                 .musicList(musicDtoList).albumList(albumDtoList)
                 .joinAlbumList(joinAlbumBySinger).build();
         return build;
     }
 
+    private Singer getSinger(String singerId) {
+        Optional<Singer> byId = singerRepository.findById(singerId);
+        if(!byId.isPresent()){
+            //추후 throw err
+            log.error("Invalid singer Id : "+ singerId);
+        }
+        return byId.get();
+    }
 
 
     public List<AlbumDto> getJoinAlbumBySinger(Singer singer){
@@ -185,6 +186,16 @@ public class MusicService {
         }
         User user = byId.get();
         return user;
+    }
+    private Album getAlbum(String albumId) {
+        Optional<Album> byId = albumRepository.findById(albumId);
+        if(!byId.isPresent()){
+            //throw err
+            log.error("User not found");
+            return null;
+        }
+        Album album = byId.get();
+        return album;
     }
     @Transactional
     public HomeRes getRecentPlayListByUser(Long userId){
@@ -328,5 +339,84 @@ public class MusicService {
         });
         likeRes.setMusicList(musicListDtoList);
         return likeRes;
+    }
+
+    @Transactional
+    public FollowAlbum addFollowAlbum(Long userId, String albumId){
+        User user=getUser(userId);
+        Album album = getAlbum(albumId);
+
+        Optional<FollowAlbum> any = user.getFollowAlbumList().stream().filter(followAlbum -> followAlbum.getAlbum().equals(album))
+                .findAny();
+        if(any.isPresent()){
+            //이미 팔로우 한 앨범을 다시 팔로우 하는 경우
+            log.error("Invalid Attempt to Follow Album");
+            return null;
+        }
+
+        FollowAlbum follow=new FollowAlbum();
+        follow.createFollowAlbum(user,album);
+        return followAlbumRepository.save(follow);
+    }
+    @Transactional
+    public FollowSinger addFollowSinger(Long userId, String singerId){
+        User user=getUser(userId);
+        Singer singer = getSinger(singerId);
+
+        Optional<FollowSinger> any = user.getFollowSingerList().stream().filter(followSinger ->
+                followSinger.getSinger().equals(singer)).findAny();
+        if(any.isPresent()){
+            //이미 팔로우 한 가수를 다시 팔로우 하는 경우
+            log.error("Invalid Attempt to Follow Singer");
+            return null;
+        }
+
+        FollowSinger follow=new FollowSinger();
+        follow.createFollowSinger(user,singer);
+        return followSingerRepository.save(follow);
+    }
+    public List<AlbumDto> getFollowAlbumList(Long userId){
+        User user = getUser(userId);
+        List<FollowAlbum> followAlbumList = user.getFollowAlbumList();
+        List<AlbumDto> albumDtoList=new ArrayList<>();
+        followAlbumList.stream().forEach(followAlbum -> {
+            AlbumDto build = AlbumDto.builder().albumId(followAlbum.getAlbum().getId()).albumName(followAlbum.getAlbum().getAlbumName())
+                    .singerId(followAlbum.getAlbum().getSinger().getId())
+                    .singerName(followAlbum.getAlbum().getSinger().getSingerName()).build();
+            albumDtoList.add(build);
+        });
+
+        return albumDtoList;
+    }
+    public List<MusicSingerDto> getFollowSingerList(Long userId){
+        User user = getUser(userId);
+        List<FollowSinger> followSingerList = user.getFollowSingerList();
+        List<MusicSingerDto> singerDtoList=new ArrayList<>();
+
+        followSingerList.stream().forEach(followSinger -> {
+            MusicSingerDto build = MusicSingerDto.builder().singerId(followSinger.getSinger().getId())
+                    .singerName(followSinger.getSinger().getSingerName()).build();
+            singerDtoList.add(build);
+        });
+
+        return singerDtoList;
+    }
+    @Transactional
+    public void deleteFollowAlbum(Long userId,String albumId){
+        User user=getUser(userId);
+        Album album = getAlbum(albumId);
+        List<FollowAlbum> collect = user.getFollowAlbumList().stream().filter(followAlbum -> followAlbum.getAlbum().equals(album))
+                .collect(Collectors.toList());
+        user.getFollowAlbumList().removeAll(collect);
+        followAlbumRepository.deleteAll(collect);
+    }
+    @Transactional
+    public void deleteFollowSinger(Long userId,String singerId){
+        User user=getUser(userId);
+        Singer singer = getSinger(singerId);
+        List<FollowSinger> collect = user.getFollowSingerList().stream().filter(followSinger -> followSinger.getSinger().equals(singer))
+                .collect(Collectors.toList());
+        user.getFollowSingerList().removeAll(collect);
+        followSingerRepository.deleteAll(collect);
     }
 }
