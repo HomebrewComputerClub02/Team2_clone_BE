@@ -1,11 +1,14 @@
 package com.homebrewtify.demo.controller;
 
+import com.homebrewtify.demo.repository.AlbumRepository;
 import com.homebrewtify.demo.service.MusicService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.homebrewtify.demo.dto.MusicDto.*;
 
@@ -14,6 +17,7 @@ import static com.homebrewtify.demo.dto.MusicDto.*;
 public class MusicController {
 
     private final MusicService musicService;
+    private final AlbumRepository albumRepository;
 
     @Operation(summary = "앨범 상세 조회", description = "앨범 클릭 시 나오는 노래 리스트")
     @GetMapping("/album/{albumId}")
@@ -79,5 +83,57 @@ public class MusicController {
         //해당 유저의 likeList를 반환해준다.
         return ResponseEntity.ok(musicService.getLikeMusicRes(userId));
     }
+
+    @Operation(summary = "앨범 팔로우")
+    @PostMapping("/follow/album/{albumId}")
+    public ResponseEntity<String> addFollowAlbum(@PathVariable String albumId){
+        //userId를 JWT로 받아서
+        Long userId=2L;
+        musicService.addFollowAlbum(userId,albumId);
+        return ResponseEntity.ok("Album Follow Saved");
+    }
+    @Operation(summary = "앨범 팔로우 목록 조히")
+    @GetMapping("/follow/album")
+    public ResponseEntity<Result> getFollowAlbum(){
+        //userId를 JWT로 받아서
+        Long userId=2L;
+        List<AlbumDto> followAlbumList = musicService.getFollowAlbumList(userId);
+        Result result=new Result(followAlbumList,"albumList");
+        return ResponseEntity.ok(result);
+    }
+    @Operation(summary = "앨범팔로우 취소")
+    @DeleteMapping("/follow/album/{albumId}")
+    public ResponseEntity<String> deleteFollowAlbum(@PathVariable String albumId){
+        //userId를 JWT로 받아서
+        Long userId=2L;
+        musicService.deleteFollowAlbum(userId,albumId);
+        return ResponseEntity.ok("Album Follow Deleted");
+    }
+    @Operation(summary = "가수 팔로우")
+    @PostMapping("/follow/singer/{singerId}")
+    public ResponseEntity<String> addFollowSinger(@PathVariable String singerId){
+        //userId를 JWT로 받아서
+        Long userId=2L;
+        musicService.addFollowSinger(userId,singerId);
+        return ResponseEntity.ok("Album Follow Saved");
+    }
+    @Operation(summary = "가수 팔로우 목록 조히")
+    @GetMapping("/follow/singer")
+    public ResponseEntity<Result> getFollowSinger(){
+        //userId를 JWT로 받아서
+        Long userId=2L;
+        List<MusicSingerDto> followSingerList = musicService.getFollowSingerList(userId);
+        Result result=new Result(followSingerList,"albumList");
+        return ResponseEntity.ok(result);
+    }
+    @Operation(summary = "가수 팔로우 취소")
+    @DeleteMapping("/follow/singer/{singerId}")
+    public ResponseEntity<String> deleteFollowSinger(@PathVariable String singerId){
+        //userId를 JWT로 받아서
+        Long userId=2L;
+        musicService.deleteFollowSinger(userId,singerId);
+        return ResponseEntity.ok("Album Singer Deleted");
+    }
+
 
 }
