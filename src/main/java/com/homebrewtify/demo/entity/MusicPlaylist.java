@@ -2,6 +2,8 @@ package com.homebrewtify.demo.entity;
 
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -20,10 +22,12 @@ public class MusicPlaylist {
 
     @ManyToOne
     @JoinColumn(name = "music_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Music music;
 
     @ManyToOne
     @JoinColumn(name= "playlist_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Playlist playlist;
 
     private java.sql.Date playlist_date = new java.sql.Date(System.currentTimeMillis());
