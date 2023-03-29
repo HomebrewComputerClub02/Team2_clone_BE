@@ -11,9 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -119,4 +117,15 @@ public class GenreService {
 
         return result;
     }
+
+    public String getRandomUpperGenre(String... passGenre){
+        Random random=new Random();
+        random.setSeed(System.currentTimeMillis());
+        List<String> nameList = Arrays.stream(genreLists).map(UpperGenre::getName).collect(Collectors.toList());
+        nameList.removeIf(name-> Arrays.stream(passGenre).anyMatch(pass->pass.equals(name)));
+
+        int idx = random.nextInt(nameList.size()-1);
+        return nameList.get(idx);
+    }
+
 }
