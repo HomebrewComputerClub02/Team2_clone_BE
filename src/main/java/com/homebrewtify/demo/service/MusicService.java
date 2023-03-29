@@ -3,6 +3,7 @@ package com.homebrewtify.demo.service;
 import com.google.common.collect.Lists;
 import com.homebrewtify.demo.config.BaseException;
 import com.homebrewtify.demo.config.BaseResponseStatus;
+import com.homebrewtify.demo.dto.PlaylistCover;
 import com.homebrewtify.demo.entity.*;
 import com.homebrewtify.demo.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class MusicService {
 
     private final FollowAlbumRepository followAlbumRepository;
     private final FollowSingerRepository followSingerRepository;
+
 
     public AlbumRes getAlbumInfo(String albumId){
         Album album=getAlbum(albumId);
@@ -189,10 +191,16 @@ public class MusicService {
         User user = getUser(userId);
 
         List<PlayRecord> allByUser = playRecordRepository.findAllByUser(user);
+        allByUser.sort(new Comparator<PlayRecord>() {
+            @Override
+            public int compare(PlayRecord o1, PlayRecord o2) {
+                return o2.getPlayDate().compareTo(o1.getPlayDate());
+            }
+        });
 
 
-        HomeRes res=new HomeRes();
-        List<Result> resultList = res.getResultList();
+        HomeRes response=new HomeRes();
+        List<Result> resultList = response.getResultList();
 
         List<String> invalidList=new ArrayList<>();
 
@@ -212,7 +220,6 @@ public class MusicService {
                     result = new Result(musicListDtos.get(0),"SONG");
                 }
             } else if (playRecord.getType().equals(PlayType.SINGER)) {
-                //TODO : 가수로 바로 재생하는 부분 구현 후 수정 체크 필요
                 //가수 이름, img, 가수 id 필요
                 Optional<Singer> opt = singerRepository.findById(playRecord.getDataId());
                 if(!opt.isPresent()){
@@ -247,7 +254,8 @@ public class MusicService {
                     continue;
                 }else{
                     //플레이리스트 이름, 플레이리스트 id, img 정도 넣은 DTO 만들어서 result에 할당
-                    result=new Result("TmpPlayList","PLAYLIST");
+                    PlaylistCover playlistCover=new PlaylistCover(opt.get().getId(),opt.get().getName(),"X");
+                    result=new Result(playlistCover,"PLAYLIST");
                 }
             }
 
@@ -257,7 +265,7 @@ public class MusicService {
         //데이터가 사라진 record 삭제
         playRecordRepository.deleteAllById(invalidList);
 
-        return res;
+        return response;
     }
 
     @Transactional
@@ -368,6 +376,13 @@ public class MusicService {
 
         return singerDtoList;
     }
+    public Result getUserPlayList(Long userId){
+        User user = getUser(userId);
+        List<Playlist> byUser = playlistRepository.findByUser(user);
+        List<PlaylistCover> pList=new ArrayList<>();
+        byUser.stream().forEach(playlist -> pList.add(new PlaylistCover(playlist.getId(),playlist.getName(),"X")));
+        return new Result(pList,user.getNickname());
+    }
     @Transactional
     public void deleteFollowAlbum(Long userId,String albumId){
         User user=getUser(userId);
@@ -385,5 +400,23 @@ public class MusicService {
                 .collect(Collectors.toList());
         user.getFollowSingerList().removeAll(collect);
         followSingerRepository.deleteAll(collect);
+    }
+
+    @Transactional
+    public Playlist createPlayList(Long userId){
+        User user = getUser(userId);
+        List<Playlist> byUser = playlistRepository.findByUser(user);
+        int size = byUser.size()+1;
+        String defaultName="내 플레이리스트 #"+size;
+        Playlist build = Playlist.builder().user(user).name(defaultName).build();
+        return playlistRepository.save(build);
+    }
+    @Transactional
+    public void renamePlaylist(String playlistId,String name){
+        Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_PLAYLIST_ID));
+        playlist.setName(name);
+    }
+    public void getPlaylist(String playlistId){
+        //플리 제목, 유저 이름, List(노래제목, trackId, 가수, 가수id, 앨범, 앨범 id, second)
     }
 }
