@@ -21,6 +21,9 @@ public class MusicDto {
         private Result randomResult1;
         private Result randomResult2;
         private Result randomResult3;
+
+        private Result top10PopularAlbums;
+        private Result top10PopularSinger;
     }
     @Data
     @AllArgsConstructor

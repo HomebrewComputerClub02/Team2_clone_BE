@@ -2,6 +2,7 @@ package com.homebrewtify.demo.controller;
 
 import com.homebrewtify.demo.dto.MusicDto;
 import com.homebrewtify.demo.service.GenreService;
+import com.homebrewtify.demo.service.MusicPopularityService;
 import com.homebrewtify.demo.service.MusicService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class HomeController {
     private final MusicService musicService;
     private final GenreService genreService;
+
+    private final MusicPopularityService popularityService;
     @Operation(summary = "홈 화면 Api", description = "홈 화면에 필요한 최근 재생목록 , 랜덤 장르 플레이리스트 반환")
     @GetMapping("/home")
     public ResponseEntity<MusicDto.HomeRes> homeRes(){
@@ -27,6 +30,8 @@ public class HomeController {
         res.setRandomResult1(new MusicDto.Result<>(genreService.getPlaylistCoversByGenre(uGenre1),uGenre1));
         res.setRandomResult2(new MusicDto.Result<>(genreService.getPlaylistCoversByGenre(uGenre2),uGenre2));
         res.setRandomResult3(new MusicDto.Result<>(genreService.getPlaylistCoversByGenre(uGenre3),uGenre3));
+        res.setTop10PopularSinger(new MusicDto.Result<>(popularityService.getTop10PopularArtist(),"인기 아티스트"));
+        res.setTop10PopularAlbums(new MusicDto.Result<>(popularityService.getTop10PopularAlbum(), "인기 앨범"));
 
         return ResponseEntity.ok(res);
     }
