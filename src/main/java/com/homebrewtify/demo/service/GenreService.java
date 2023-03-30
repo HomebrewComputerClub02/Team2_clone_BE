@@ -74,9 +74,38 @@ public class GenreService {
         저장되어있지 않으면 플레이리스트를 생성하고 db에 저장한다.
          */
         for(String gen : genres){
-            String coverImgUrl;
+            String coverImgUrl, coverImgUrl2;
             List<Playlist> genPlaylist = playlistRepository.findByUser_UserIdAndName(null, gen);
+            List<Playlist> popularPlaylist = playlistRepository.findByUser_UserIdAndName(null,"인기 "+gen);
             Playlist pl;
+            Playlist popularPl;
+            if(!popularPlaylist.isEmpty()){
+                popularPl = popularPlaylist.get(0);
+            }else{
+                //플레이리스트 생성후 db에 저장
+                //1. save tb_playlist
+                popularPl = Playlist.builder()
+                        .user(null)
+                        .name("인기 "+gen)
+                        .build();
+                playlistRepository.save(popularPl);//플레이리스트 생성후 db에 저장
+
+                //2. find music_list
+                List<Music> musicList = musicRepository.findTop10ByGenre_GenreNameOrderByFeature_Popularity(gen);
+                List<MusicPlaylist> musicPlaylists = new ArrayList<MusicPlaylist>();
+
+
+                for (Music m: musicList) {
+                    musicPlaylists.add(MusicPlaylist.builder()
+                            .music(m)
+                            .playlist(popularPl)
+                            .build());
+                }
+
+                //3. 결과값 db에 저장
+                musicPlaylistRepository.saveAll(musicPlaylists);
+            }
+
             if(!genPlaylist.isEmpty()){
                 pl = genPlaylist.get(0);
             }else{
@@ -107,10 +136,10 @@ public class GenreService {
 
             //플레이리스트에 포함된 첫번째 곡의 앨범이미지를 대표이미지로 함
             coverImgUrl = musicPlaylistRepository.findFirstByPlaylist_Id(pl.getId()).map(MusicPlaylist:: getMusic).map(Music :: getAlbum).map(Album::getImgUrl).orElse(null);
-
+            coverImgUrl2 = musicPlaylistRepository.findFirstByPlaylist_Id(popularPl.getId()).map(MusicPlaylist:: getMusic).map(Music :: getAlbum).map(Album::getImgUrl).orElse(null);
             //조회된 플레이리스트를 result에 저장
             result.add(new PlaylistCover(pl.getId(), pl.getName(), coverImgUrl));
-
+            result.add(new PlaylistCover(popularPl.getId(), popularPl.getName(), coverImgUrl2));
         }
 
 
