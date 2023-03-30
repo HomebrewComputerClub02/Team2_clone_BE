@@ -100,7 +100,7 @@ public class GenreService {
                             .build());
                 }
 
-                //결과값 db에 저장
+                //3. 결과값 db에 저장
                 musicPlaylistRepository.saveAll(musicPlaylists);
 
             }
