@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -37,6 +38,7 @@ public class MusicService {
 
     private final FollowAlbumRepository followAlbumRepository;
     private final FollowSingerRepository followSingerRepository;
+    private final MusicPlaylistRepository musicPlaylistRepository;
 
 
     public AlbumRes getAlbumInfo(String albumId){
@@ -129,7 +131,8 @@ public class MusicService {
                 singerList.add(singerDto);
             });
 
-            MusicListDto build = MusicListDto.builder().trackId(music.getTrackId()).title(music.getTitle()).singerList(singerList).build();
+            MusicListDto build = MusicListDto.builder().trackId(music.getTrackId())
+                    .title(music.getTitle()).singerList(singerList).build();
             musicDtoList.add(build);
         });
         return musicDtoList;
@@ -296,29 +299,20 @@ public class MusicService {
         List<LikeMusic> withMusicByUser = likeMusicRepository.findWithMusicByUser(user);
         LikeRes likeRes=new LikeRes();
         likeRes.setUserName(user.getNickname());
+        List<Music> musicList = withMusicByUser.stream().map(lm -> lm.getMusic()).collect(Collectors.toList());
 
+        List<MusicListDto> musicListDtos = getMusicListDtos(musicList);
+        //TODO : 당연히 같겠지만, 혹시 모르니 예외처리..
+        if(musicListDtos.size()!= withMusicByUser.size()){
+            log.error("Size is Not Equal Something is wrong");
+            return null;
+        }
+        for (int i = 0; i < musicListDtos.size(); i++) {
+            Long seconds = Duration.between(withMusicByUser.get(i).getLikeDate(), LocalDateTime.now()).getSeconds();
+            musicListDtos.get(i).setSeconds(seconds);
+        }
 
-        List<MusicListDto> musicListDtoList=new ArrayList<>();
-        withMusicByUser.forEach(likeMusic->{
-
-            //TODO: 지연로딩 발생할 지점 ( 나중에 네이티브 쿼리를 짜든 해야 할 듯..)
-            List<MusicSinger> musicSingerList = likeMusic.getMusic().getMusicSingerList();
-
-            List<MusicSingerDto> msDtoList=new ArrayList<>();
-            musicSingerList.forEach(musicSinger ->
-                msDtoList.add(MusicSingerDto.builder()
-                        .singerName(musicSinger.getSinger().getSingerName()).singerId(musicSinger.getSinger().getId())
-                        .build()
-                )
-            );
-
-
-            Long seconds = Duration.between(likeMusic.getLikeDate(), LocalDateTime.now()).getSeconds();
-            MusicListDto build = MusicListDto.builder().trackId(likeMusic.getMusic().getTrackId())
-                    .title(likeMusic.getMusic().getTitle()).seconds(seconds).singerList(msDtoList).build();
-            musicListDtoList.add(build);
-        });
-        likeRes.setMusicList(musicListDtoList);
+        likeRes.setMusicList(musicListDtos);
         return likeRes;
     }
 
@@ -413,10 +407,58 @@ public class MusicService {
     }
     @Transactional
     public void renamePlaylist(String playlistId,String name){
-        Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_PLAYLIST_ID));
+        Playlist playlist = getPlayList(playlistId);
         playlist.setName(name);
     }
-    public void getPlaylist(String playlistId){
+    @Transactional
+    public void deletePlaylist(String playlistId){
+        playlistRepository.deleteById(playlistId);
+    }
+    public Result getMusicByPlayList(String playlistId){
         //플리 제목, 유저 이름, List(노래제목, trackId, 가수, 가수id, 앨범, 앨범 id, second)
+        Playlist playList = getPlayList(playlistId);
+        List<MusicPlaylist> byPlayList = musicPlaylistRepository.findByPlaylist(playList);
+        List<Music> musicList = byPlayList.stream().map(pl -> pl.getMusic()).collect(Collectors.toList());
+        List<MusicListDto> musicListDtos = getMusicListDtos(musicList);
+        //TODO : music playlist에서 date를 LocalDateTime으로 변경 하면 시간 초 기능 추가
+//        //TODO : 뜨면 안되는 에러
+//        if(musicListDtos.size()!= byPlayList.size()){
+//            log.error("Size is Different Something is wrong");
+//        }
+//        for (int i = 0; i < musicListDtos.size(); i++) {
+//            Date playlistDate = byPlayList.get(i).getPlaylist_date();
+//            int seconds = playlistDate.getSeconds() - LocalDateTime.now().getSecond();
+//            musicListDtos.get(i).setSeconds(Long.valueOf(seconds));
+//        }
+
+        //TODO : 자동생성(생성자 : spotify) 테스트 필요
+        Optional<User> optUser = Optional.ofNullable(playList.getUser());
+        if(optUser.isPresent()){
+            Result result= new Result(musicListDtos,optUser.get().getNickname());
+            return result;
+        }else{
+            Result result= new Result(musicListDtos,"homebrewtify");
+            return result;
+        }
+
+    }
+    @Transactional
+    public MusicPlaylist addMusicToPlayList(String playListId, String musicId){
+        Playlist playList = getPlayList(playListId);
+        Music music = getMusic(musicId);
+        MusicPlaylist build = MusicPlaylist.builder().music(music).playlist(playList).build();
+        return musicPlaylistRepository.save(build);
+    }
+    @Transactional
+    public void deleteMusicFromPlaylist(String playListId, String musicId){
+        Playlist playList = getPlayList(playListId);
+        Music music = getMusic(musicId);
+        List<MusicPlaylist> opt = musicPlaylistRepository.findByPlaylistAndMusic(playList, music);
+        musicPlaylistRepository.deleteAll(opt);
+    }
+
+    private Playlist getPlayList(String playlistId) {
+        return  playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_PLAYLIST_ID));
     }
 }
