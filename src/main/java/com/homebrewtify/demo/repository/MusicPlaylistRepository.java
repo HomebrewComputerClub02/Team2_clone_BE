@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface MusicPlaylistRepository extends JpaRepository<MusicPlaylist, String> {
     Optional<MusicPlaylist> findFirstByPlaylist_Id(String id);
 
+    List<MusicPlaylist> findByPlaylist_Id(String id);
 }
