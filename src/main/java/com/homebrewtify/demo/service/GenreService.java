@@ -91,7 +91,7 @@ public class GenreService {
                 playlistRepository.save(popularPl);//플레이리스트 생성후 db에 저장
 
                 //2. find music_list
-                List<Music> musicList = musicRepository.findTop10ByGenre_GenreNameOrderByFeature_Popularity(gen);
+                List<Music> musicList = musicRepository.findTop10ByGenre_GenreNameOrderByFeature_PopularityDesc(gen);
                 List<MusicPlaylist> musicPlaylists = new ArrayList<MusicPlaylist>();
 
 
