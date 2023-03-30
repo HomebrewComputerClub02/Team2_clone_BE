@@ -23,7 +23,8 @@ public enum BaseResponseStatus {
     INVALID_USER_ID(false,2221,"유효하지 않은 회원 id입니다."),
     INVALID_ALBUM_ID(false,2222,"유효하지 않은 앨범 id입니다."),
     INVALID_MUSIC_ID(false,2223,"유효하지 않은 음악 id입니다."),
-    INVALID_SAVE_ATTEMPT(false,2224,"유효하지 저장 시도입니다.(이미 저장되어 있습니다)"),
+    INVALID_PLAYLIST_ID(false,2224,"유효하지 않은 플레이리스트 id입니다."),
+    INVALID_SAVE_ATTEMPT(false,2225,"유효하지 저장 시도입니다.(이미 저장되어 있습니다)"),
 
     /**
      * 3000 : Response 오류

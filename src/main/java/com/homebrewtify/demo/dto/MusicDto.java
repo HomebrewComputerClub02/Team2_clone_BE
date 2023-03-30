@@ -17,7 +17,10 @@ public class MusicDto {
     @Data
     public static class HomeRes {
         private List<Result> resultList=new ArrayList<>();
-        //TODO: 랜덤 플레이리스트 3개 정도 더 추가 필요
+
+        private Result randomResult1;
+        private Result randomResult2;
+        private Result randomResult3;
     }
     @Data
     @AllArgsConstructor
