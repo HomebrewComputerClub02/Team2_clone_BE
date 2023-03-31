@@ -6,6 +6,8 @@ import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -30,6 +32,7 @@ public class User {
 
     private String password;
 
+
     private String picture;
 
     @Enumerated(EnumType.STRING)
@@ -43,4 +46,14 @@ public class User {
     public String getRoleKey(){
         return this.role.getKey();
     }
+
+    @OneToMany(mappedBy = "user")
+    @Builder.Default
+    private List<FollowAlbum> followAlbumList=new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    @Builder.Default
+    private List<FollowSinger> followSingerList=new ArrayList<>();
+
+
 }

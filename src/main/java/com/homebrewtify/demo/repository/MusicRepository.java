@@ -13,6 +13,9 @@ public interface MusicRepository extends JpaRepository<Music,String> {
 
     List<Music> findByAlbum(Album album);
 
+    List<Music> findFirst10ByGenre_GenreName(String name);
+    List<Music> findTop10ByGenre_GenreNameOrderByFeature_PopularityDesc(String name);
+
     @Query("select m from Music m join fetch m.album where m.album.id=:albumId")
     List<Music> findByAlbumId(String albumId);
 

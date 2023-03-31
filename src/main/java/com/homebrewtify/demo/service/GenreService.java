@@ -3,14 +3,15 @@ package com.homebrewtify.demo.service;
 import com.homebrewtify.demo.dto.GetAllGenreRes;
 import com.homebrewtify.demo.dto.PlaylistCover;
 import com.homebrewtify.demo.dto.UpperGenre;
+import com.homebrewtify.demo.entity.*;
+import com.homebrewtify.demo.repository.MusicPlaylistRepository;
+import com.homebrewtify.demo.repository.MusicRepository;
 import com.homebrewtify.demo.repository.PlaylistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +48,8 @@ public class GenreService {
     };
 
     private final PlaylistRepository playlistRepository;
+    private final MusicPlaylistRepository musicPlaylistRepository;
+    private final MusicRepository musicRepository;
     public GetAllGenreRes[] getAllGenre(){
         return Arrays.stream(genreLists)
                 .map(g->new GetAllGenreRes(g.getName(), g.getColor(), g.getImgUrl()))
@@ -54,9 +57,104 @@ public class GenreService {
                 .toArray(new GetAllGenreRes[0]);
     }
 
-    public PlaylistCover[] getPlaylistCoversByGenre(String genre){
-        playlistRepository.findByUser_UserIdAndName(null, "genre");
+    public List<PlaylistCover> getPlaylistCoversByGenre(String genre){
+        List<String> genres = null;
+        List<PlaylistCover> result = new ArrayList<>();
 
-        return new PlaylistCover[]{new PlaylistCover("","dd", "url")};
+        //uppergenre의 하위장르들 모두 genres에 저장하기
+        for (UpperGenre ele : genreLists) {
+            if(ele.getName().equals(genre)){
+                genres = ele.getGenres();
+                break;
+            }
+        }
+
+        /*
+        하위장르들에 대한 playlist가 이미 db에 저장되어있는지를 확인하고 저장되어있으면 조회해서 플레이리스트를 result에 저장하고
+        저장되어있지 않으면 플레이리스트를 생성하고 db에 저장한다.
+         */
+        for(String gen : genres){
+            String coverImgUrl, coverImgUrl2;
+            List<Playlist> genPlaylist = playlistRepository.findByUser_UserIdAndName(null, gen);
+            List<Playlist> popularPlaylist = playlistRepository.findByUser_UserIdAndName(null,"인기 "+gen);
+            Playlist pl;
+            Playlist popularPl;
+            if(!popularPlaylist.isEmpty()){
+                popularPl = popularPlaylist.get(0);
+            }else{
+                //플레이리스트 생성후 db에 저장
+                //1. save tb_playlist
+                popularPl = Playlist.builder()
+                        .user(null)
+                        .name("인기 "+gen)
+                        .build();
+                playlistRepository.save(popularPl);//플레이리스트 생성후 db에 저장
+
+                //2. find music_list
+                List<Music> musicList = musicRepository.findTop10ByGenre_GenreNameOrderByFeature_PopularityDesc(gen);
+                List<MusicPlaylist> musicPlaylists = new ArrayList<MusicPlaylist>();
+
+
+                for (Music m: musicList) {
+                    musicPlaylists.add(MusicPlaylist.builder()
+                            .music(m)
+                            .playlist(popularPl)
+                            .build());
+                }
+
+                //3. 결과값 db에 저장
+                musicPlaylistRepository.saveAll(musicPlaylists);
+            }
+
+            if(!genPlaylist.isEmpty()){
+                pl = genPlaylist.get(0);
+            }else{
+                //플레이리스트 생성후 db에 저장
+                //1. save tb_playlist
+                pl = Playlist.builder()
+                            .user(null)
+                            .name(gen)
+                            .build();
+                playlistRepository.save(pl);
+
+                //2. find music_list
+                List<Music> musicList = musicRepository.findFirst10ByGenre_GenreName(gen);
+                List<MusicPlaylist> musicPlaylists = new ArrayList<MusicPlaylist>();
+
+
+                for (Music m: musicList) {
+                    musicPlaylists.add(MusicPlaylist.builder()
+                            .music(m)
+                            .playlist(pl)
+                            .build());
+                }
+
+                //3. 결과값 db에 저장
+                musicPlaylistRepository.saveAll(musicPlaylists);
+
+            }
+
+            //플레이리스트에 포함된 첫번째 곡의 앨범이미지를 대표이미지로 함
+            coverImgUrl = musicPlaylistRepository.findFirstByPlaylist_Id(pl.getId()).map(MusicPlaylist:: getMusic).map(Music :: getAlbum).map(Album::getImgUrl).orElse(null);
+            coverImgUrl2 = musicPlaylistRepository.findFirstByPlaylist_Id(popularPl.getId()).map(MusicPlaylist:: getMusic).map(Music :: getAlbum).map(Album::getImgUrl).orElse(null);
+            //조회된 플레이리스트를 result에 저장
+            result.add(new PlaylistCover(pl.getId(), pl.getName(), coverImgUrl));
+            result.add(new PlaylistCover(popularPl.getId(), popularPl.getName(), coverImgUrl2));
+        }
+
+
+
+        return result;
     }
+
+    public String getRandomUpperGenre(String... passGenre){
+        Random random=new Random();
+        random.setSeed(System.currentTimeMillis());
+        List<String> nameList = Arrays.stream(genreLists).map(UpperGenre::getName).collect(Collectors.toList());
+        nameList.removeIf(name-> Arrays.stream(passGenre).anyMatch(pass->pass.equals(name)));
+
+        int idx = random.nextInt(nameList.size()-1);
+        return nameList.get(idx);
+    }
+
 }

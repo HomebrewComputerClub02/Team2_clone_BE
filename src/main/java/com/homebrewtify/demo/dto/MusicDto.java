@@ -1,67 +1,83 @@
 package com.homebrewtify.demo.dto;
 
-import com.homebrewtify.demo.entity.Music;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MusicDto {
-    public static class HomeRes{
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class LikeRes{
+        private String userName;
+        private List<MusicListDto> musicList;
 
-        //?
-        private String genreName;
-//        List<PlayList> playlists;
-//
-//        List<PlayList> randomPlaylists;
     }
+    @Data
+    public static class HomeRes {
+        private List<Result> resultList=new ArrayList<>();
+
+        private Result randomResult1;
+        private Result randomResult2;
+        private Result randomResult3;
+
+        private Result top10PopularAlbums;
+        private Result top10PopularSinger;
+    }
+    @Data
+    @AllArgsConstructor
+    public static class Result<T> {
+        private T data;
+
+        private String type;
+    }
+
     @Builder
     @Getter
     @Setter
-    public static class singerRes{
+    public static class SingerRes {
         private String singerName;
+        @Builder.Default
+        private String singerImgUrl="X";
 
         //인기 10, 참여 노래가 아닌 소유 앨범의 노래 기준,
-        private List<musicListDto> musicList;
+        private List<MusicListDto> musicList;
 
         //디스코 그래피 (앨범 리스트만)
-        private List<albumDto> albumList;
-        //피처링(플레이리스트형태)
-        //그냥 피처링한 곡을 모아서 줘야 하나..?
+        private List<AlbumDto> albumList;
 
 
-        //피처링, 팬들이 좋아하는 다른 음악 , 참여 앨, 발견 위치
-        //피처링은 가능은 한데 힘들고
-        //팬들이 좋아하는거 불가능 user 추천관련
-        //참여 앨범 불가능(해당 앨범에 그냥 앨범 주인 한명만 존재
-        //발견위 불가능..
+        //참여 앨범
+        private List<AlbumDto> joinAlbumList;
     }
 
     @Builder
     @Getter
     @Setter
-    public static class albumRes{
+    public static class AlbumRes {
         private String albumName;
-        private musicSingerDto singer;
-
-        private List<musicListDto> musicList;
+        private MusicSingerDto albumSinger;
+        private List<MusicListDto> musicList;
         //노래당 트랙 id, 제목, 가사(x), 가수목록(가수id,가수이름)
 
     }
     @Builder
     @Getter
     @Setter
-    public static class musicListDto{
+    public static class MusicListDto {
         private String trackId;
         private String title;
-        private List<musicSingerDto> singerList;
+
+        @Builder.Default
+        private Long seconds=-1L;
+        private List<MusicSingerDto> singerList;
         //가수이름, 가수 id
     }
     @Builder
     @Getter
     @Setter
-    public static class musicSingerDto{
+    public static class MusicSingerDto {
         private String singerId;
         private String singerName;
         @Builder.Default
@@ -70,9 +86,12 @@ public class MusicDto {
     @Builder
     @Getter
     @Setter
-    public static class albumDto{
+    public static class AlbumDto {
         private String albumId;
         private String albumName;
+
+        private String singerName;
+        private String singerId;
         @Builder.Default
         private String imgUrl="X";
         @Builder.Default
