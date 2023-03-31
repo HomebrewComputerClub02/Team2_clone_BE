@@ -5,6 +5,7 @@ import com.homebrewtify.demo.entity.Music;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -24,6 +25,24 @@ public interface MusicRepository extends JpaRepository<Music,String> {
 
     @EntityGraph(attributePaths = "feature")
     List<Music> findWithFeatureByAlbum(Album album);
+
+    @Query(value = "select * from music m join music_feature f on m.feature_id=f.feature_id " +
+            "where m.title like :keyword%  order by popularity desc limit 1000"
+            , nativeQuery = true
+    )
+    List<Music> searchMusicStart(@Param("keyword") String keyword);
+
+    @Query(value = "select * from music m join music_feature f on m.feature_id=f.feature_id " +
+            "where m.title like %:keyword  order by popularity desc limit 1000"
+            , nativeQuery = true
+    )
+    List<Music> searchMusicEnd(@Param("keyword") String keyword);
+
+    @Query(value = "select * from music m join music_feature f on m.feature_id=f.feature_id " +
+            "where m.title like %:keyword%  order by popularity desc limit 1000"
+            , nativeQuery = true
+    )
+    List<Music> searchMusicContain(@Param("keyword") String keyword);
 
 
 }
