@@ -7,26 +7,26 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-#  datasource:
-#    url: jdbc:mysql://localhost:3306/homebrewtify?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&autoReconnect=true&rewriteBatchedStatements=true
-#    username: homebrew
-#    password: homebrew
-#    driver-class: com.mysql.cj.jdbc.Driver
+  datasource:
+    url: jdbc:mysql://localhost:3306/homebrewtify?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC&autoReconnect=true&rewriteBatchedStatements=true
+    username: homebrew
+    password: homebrew
+    driver-class: com.mysql.cj.jdbc.Driver
 #  datasource:
   #    url: jdbc:h2:tcp://localhost/~/test;MODE=MySQL
 #    driver-class-name: org.h2.Driver
 #    username: sa
-  datasource:
-    url: jdbc:mysql://localhost:3306/homebrewtify?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&autoReconnect=true&rewriteBatchedStatements=true
-    username: root
-    password: shine2358!
-    driver-class: com.mysql.cj.jdbc.Driver
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/homebrewtify?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&autoReconnect=true&rewriteBatchedStatements=true
+#    username: root
+#    password: shine2358!
+#    driver-class: com.mysql.cj.jdbc.Driver
   batch:
     jdbc:
       initialize-schema: always
   jpa:
     hibernate:
-      ddl-auto: update # update / create : 애플리케이션을 시작할 때 데이터베이스를 초기화하고 다시 테이블 생성
+      ddl-auto: none # update / create : 애플리케이션을 시작할 때 데이터베이스를 초기화하고 다시 테이블 생성
     show-sql: true
     properties:
       hibernate:
