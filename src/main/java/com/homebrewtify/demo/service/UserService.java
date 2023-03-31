@@ -88,5 +88,19 @@ public class UserService {
                 .build();
     }
 
+    /**
+     * 회원 정보 조회
+     */
+    public UserDto.UserRes getUser(Long userId) throws BaseException{
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(userOptional.isEmpty()){
+            throw new BaseException(BaseResponseStatus.RESPONSE_ERROR);
+        }
+        User user = userOptional.get();
+        return UserDto.UserRes.builder()
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .build();
+    }
 
 }

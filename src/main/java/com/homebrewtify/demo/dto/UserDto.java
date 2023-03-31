@@ -74,6 +74,14 @@ public class UserDto {
 
     }
 
+    @Builder
+    @Getter
+    public static class UserRes{
+        private String email;
+        private String nickname;
+
+    }
+
 
 
 

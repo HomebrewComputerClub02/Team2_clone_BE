@@ -37,7 +37,7 @@ out/
 .vscode/
 
 *.yml
-application-oauth.yml
+application-google.yml
 
 ## secret ##
 /config/secret/Secret.java
