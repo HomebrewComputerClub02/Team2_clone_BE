@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class PlaylistController {
+public class PlaylistController2 {
 
     @Autowired
     private PlaylistService playlistService;
