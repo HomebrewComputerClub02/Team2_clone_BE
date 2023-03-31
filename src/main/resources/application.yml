@@ -35,6 +35,8 @@ spring:
         order_inserts: true
         order_updates: true
         format_sql: true # 실행되는 query 보여줌.
-config:
-  import: application-ouath.yml
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  profiles:
+    include:
+      - google
 
