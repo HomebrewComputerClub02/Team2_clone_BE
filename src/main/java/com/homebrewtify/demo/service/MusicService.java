@@ -383,6 +383,8 @@ public class MusicService {
         Album album = getAlbum(albumId);
         List<FollowAlbum> collect = user.getFollowAlbumList().stream().filter(followAlbum -> followAlbum.getAlbum().equals(album))
                 .collect(Collectors.toList());
+        if(collect.size()==0)
+            throw new BaseException(BaseResponseStatus.INVALID_DELETE_ATTEMPT);
         user.getFollowAlbumList().removeAll(collect);
         followAlbumRepository.deleteAll(collect);
     }
@@ -392,6 +394,8 @@ public class MusicService {
         Singer singer = getSinger(singerId);
         List<FollowSinger> collect = user.getFollowSingerList().stream().filter(followSinger -> followSinger.getSinger().equals(singer))
                 .collect(Collectors.toList());
+        if(collect.size()==0)
+            throw new BaseException(BaseResponseStatus.INVALID_DELETE_ATTEMPT);
         user.getFollowSingerList().removeAll(collect);
         followSingerRepository.deleteAll(collect);
     }
@@ -454,6 +458,8 @@ public class MusicService {
         Playlist playList = getPlayList(playListId);
         Music music = getMusic(musicId);
         List<MusicPlaylist> opt = musicPlaylistRepository.findByPlaylistAndMusic(playList, music);
+        if(opt.size()==0)
+            throw new BaseException(BaseResponseStatus.INVALID_DELETE_ATTEMPT);
         musicPlaylistRepository.deleteAll(opt);
     }
 
