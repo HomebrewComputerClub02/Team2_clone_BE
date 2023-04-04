@@ -41,6 +41,7 @@ public class UserDto {
         // 비밀번호
         @Mapping("password")
         @NotBlank
+        @Setter
         private String password;
 
 

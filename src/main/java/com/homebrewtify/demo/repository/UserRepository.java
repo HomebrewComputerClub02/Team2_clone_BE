@@ -1,6 +1,5 @@
 package com.homebrewtify.demo.repository;
 
-import com.homebrewtify.demo.entity.Singer;
 import com.homebrewtify.demo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -16,6 +15,6 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     boolean existsByEmailAndPassword(String email,String password); // 이메일과 패스워드로 일치하는 유저 찾기
 
-
-
+    Optional<User> findFirstByUsername(String username);
+    Optional<User> findFirstByEmail(String email);
 }
