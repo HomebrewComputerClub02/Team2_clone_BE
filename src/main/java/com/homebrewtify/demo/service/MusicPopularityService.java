@@ -1,9 +1,7 @@
 package com.homebrewtify.demo.service;
 
-import com.homebrewtify.demo.dto.musicinplaylist.AlbumInMusicInPlaylist;
-import com.homebrewtify.demo.dto.musicinplaylist.SingerInMusicInPlaylist;
-import com.homebrewtify.demo.dto.popularity.AlbumInterface;
-import com.homebrewtify.demo.dto.popularity.SingerInterface;
+import com.homebrewtify.demo.dto.interfacedto.AlbumInterface;
+import com.homebrewtify.demo.dto.interfacedto.SingerInterface;
 import com.homebrewtify.demo.repository.AlbumRepository;
 import com.homebrewtify.demo.repository.MusicRepository;
 import com.homebrewtify.demo.repository.SingerRepository;

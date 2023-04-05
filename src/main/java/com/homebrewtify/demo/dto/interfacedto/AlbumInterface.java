@@ -1,4 +1,4 @@
-package com.homebrewtify.demo.dto.popularity;
+package com.homebrewtify.demo.dto.interfacedto;
 
 public interface AlbumInterface {
     String getId();
