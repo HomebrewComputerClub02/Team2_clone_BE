@@ -25,6 +25,14 @@ public class MusicDto {
         private Result top10PopularAlbums;
         private Result top10PopularSinger;
     }
+
+    @Data
+    public static class SearchRes{
+        private Result musicResult;
+        private Result albumResult;
+        private Result singerResult;
+    }
+
     @Data
     @AllArgsConstructor
     public static class Result<T> {
