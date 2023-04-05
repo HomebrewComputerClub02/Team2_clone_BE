@@ -54,6 +54,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return new MemberDetail(opt.get(),oAuthUserInfo);
         }else{
             User build = User.builder().username(username).password(password)
+                    .email(email)
                     .role(Role.USER)
                     .build();
             userRepository.save(build);
