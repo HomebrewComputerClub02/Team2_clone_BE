@@ -6,6 +6,7 @@ import com.homebrewtify.demo.config.jwt.TokenProvider;
 import com.homebrewtify.demo.dto.UserDto;
 import com.homebrewtify.demo.entity.User;
 import com.homebrewtify.demo.repository.UserRepository;
+import com.homebrewtify.demo.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -41,5 +42,16 @@ public class UserServiceV2 {
     public void setRefreshToken(String username,String refreshJwt) {
         User user = userRepository.findFirstByUsername(username).orElseThrow(() -> new BaseException(BaseResponseStatus.FAILED_TO_LOGIN));
         user.setRefreshToken(refreshJwt);
+    }
+    @Transactional
+    public void deleteRefresh() {
+        String userName = SecurityUtil.getCurrentUsername().orElseThrow(() -> new BaseException(BaseResponseStatus.FAILED_TO_LOGIN));
+        System.out.println("userName = " + userName);
+        User user = userRepository.findFirstByUsername(userName).orElseThrow(() -> new BaseException(BaseResponseStatus.FAILED_TO_LOGIN));
+        user.setRefreshToken("");
+    }
+    @Transactional
+    public void deleteMember(Long memberId) {
+        userRepository.deleteById(memberId);
     }
 }

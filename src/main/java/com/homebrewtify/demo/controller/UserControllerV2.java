@@ -2,11 +2,14 @@ package com.homebrewtify.demo.controller;
 
 import com.homebrewtify.demo.config.BaseException;
 import com.homebrewtify.demo.config.BaseResponse;
+import com.homebrewtify.demo.config.BaseResponseStatus;
 import com.homebrewtify.demo.config.jwt.JwtFilter;
 import com.homebrewtify.demo.config.jwt.TokenProvider;
 import com.homebrewtify.demo.dto.UserDto;
 import com.homebrewtify.demo.entity.User;
+import com.homebrewtify.demo.repository.UserRepository;
 import com.homebrewtify.demo.service.UserServiceV2;
+import com.homebrewtify.demo.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +20,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +40,8 @@ public class UserControllerV2 {
     private final UserServiceV2 userService;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenProvider tokenProvider;
+    @Autowired
+    private UserRepository userRepository;
     @PostMapping("/signup")
     public BaseResponse<UserDto.SignUpRes> createUser(@RequestBody @Valid UserDto.SignUpReq signUpReq){
         log.info("회원가입 정보 : ={}",signUpReq);
@@ -82,7 +85,7 @@ public class UserControllerV2 {
             //cookie.setSecure(true);
             response.addCookie(cookie);
 
-            return new ResponseEntity<>("Login Success", httpHeaders, HttpStatus.OK);
+            return new ResponseEntity<>(accessJwt, httpHeaders, HttpStatus.OK);
         } catch (Exception e){
             System.out.println(e.getClass());
             System.out.println(e.getCause());
@@ -90,5 +93,23 @@ public class UserControllerV2 {
             System.out.println(e.getStackTrace());
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletResponse response){
+        log.info("logout called");
+        userService.deleteRefresh();
+        expireCookie(response,"RefreshToken");
+        return new ResponseEntity<>("Logout Success", HttpStatus.OK);
+    }
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteMember(@RequestParam("memberId") Long memberId){
+        userService.deleteMember(memberId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private static void expireCookie(HttpServletResponse response,String name) {
+        Cookie cookie=new Cookie(name, null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
     }
 }
