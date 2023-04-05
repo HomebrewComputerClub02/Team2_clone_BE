@@ -15,8 +15,7 @@ public class FollowController {
     @PostMapping("/album/{albumId}")
     public ResponseEntity<String> addFollowAlbum(@PathVariable String albumId){
         //userId를 JWT로 받아서
-        Long userId=2L;
-        musicService.addFollowAlbum(userId,albumId);
+        musicService.addFollowAlbum(albumId);
         return ResponseEntity.ok("Album Follow Saved");
     }
 
@@ -24,16 +23,14 @@ public class FollowController {
     @DeleteMapping("/album/{albumId}")
     public ResponseEntity<String> deleteFollowAlbum(@PathVariable String albumId){
         //userId를 JWT로 받아서
-        Long userId=2L;
-        musicService.deleteFollowAlbum(userId,albumId);
+        musicService.deleteFollowAlbum(albumId);
         return ResponseEntity.ok("Album Follow Deleted");
     }
     @Operation(summary = "가수 팔로우")
     @PostMapping("/singer/{singerId}")
     public ResponseEntity<String> addFollowSinger(@PathVariable String singerId){
         //userId를 JWT로 받아서
-        Long userId=2L;
-        musicService.addFollowSinger(userId,singerId);
+        musicService.addFollowSinger(singerId);
         return ResponseEntity.ok("Album Follow Saved");
     }
 
@@ -41,8 +38,7 @@ public class FollowController {
     @DeleteMapping("/singer/{singerId}")
     public ResponseEntity<String> deleteFollowSinger(@PathVariable String singerId){
         //userId를 JWT로 받아서
-        Long userId=2L;
-        musicService.deleteFollowSinger(userId,singerId);
+        musicService.deleteFollowSinger(singerId);
         return ResponseEntity.ok("Album Singer Deleted");
     }
 }

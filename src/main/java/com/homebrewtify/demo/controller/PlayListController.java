@@ -18,8 +18,7 @@ public class PlayListController {
     @PostMapping("")
     public ResponseEntity<String> createPlayList(){
         //userId를 JWT로 받아서
-        Long userId=2L;
-        musicService.createPlayList(userId);
+        musicService.createPlayList();
         return ResponseEntity.ok("PlayList is created");
     }
 
@@ -40,8 +39,7 @@ public class PlayListController {
     @GetMapping("/getUserPlayList")
     public ResponseEntity<MusicDto.Result> getListOfPlaylist(){
         //userId를 JWT로 받아서
-        Long userId=2L;
-        return ResponseEntity.ok(musicService.getUserPlayList(userId));
+        return ResponseEntity.ok(musicService.getUserPlayList());
     }
     @Operation(summary = "플레이리스트 조회", description = "플리 이름은 알아서..? type=유저이름 or homebrewtify")
     @GetMapping("/{playListId}")

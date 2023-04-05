@@ -6,6 +6,7 @@ import com.homebrewtify.demo.config.BaseResponseStatus;
 import com.homebrewtify.demo.dto.PlaylistCover;
 import com.homebrewtify.demo.entity.*;
 import com.homebrewtify.demo.repository.*;
+import com.homebrewtify.demo.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -139,8 +140,8 @@ public class MusicService {
     }
 
     @Transactional
-    public PlayRecord saveRecentPlay(String type, Long userId, String dataId){
-        User user = getUser(userId);
+    public PlayRecord saveRecentPlay(String type, String dataId){
+        User user = getUser();
         PlayType pType;
         if(type.equals("SONG")){
             pType=PlayType.SONG;
@@ -174,10 +175,13 @@ public class MusicService {
         return playRecordRepository.save(build);
     }
 
-    private User getUser(Long userId) {
-        User byId = userRepository.findById(userId)
+    private User getUser() {
+        return userRepository.findFirstByUsername
+                (SecurityUtil.getCurrentUsername().orElseThrow(()->new BaseException(BaseResponseStatus.INVALID_JWT)))
                 .orElseThrow(()->new BaseException(BaseResponseStatus.INVALID_USER_ID));
-        return byId;
+//        User byId = userRepository.findById()
+//                .orElseThrow(()->new BaseException(BaseResponseStatus.INVALID_USER_ID));
+//        return byId;
     }
     private Album getAlbum(String albumId) {
         Album byId = albumRepository.findById(albumId)
@@ -190,8 +194,8 @@ public class MusicService {
         return byId;
     }
     @Transactional
-    public HomeRes getRecentPlayListByUser(Long userId){
-        User user = getUser(userId);
+    public HomeRes getRecentPlayListByUser(){
+        User user = getUser();
 
         List<PlayRecord> allByUser = playRecordRepository.findAllByUser(user);
         allByUser.sort(new Comparator<PlayRecord>() {
@@ -272,8 +276,8 @@ public class MusicService {
     }
 
     @Transactional
-    public LikeMusic saveLike(Long userId, String musicId) {
-        User user=getUser(userId);
+    public LikeMusic saveLike(String musicId) {
+        User user=getUser();
         Music music = getMusic(musicId);
         //중복 저장 시 error (이미 있으면 error)
         likeMusicRepository.findByMusicAndUser(music, user)
@@ -288,17 +292,17 @@ public class MusicService {
 
     }
     @Transactional
-    public void deleteLike(Long userId, String musicId){
-        User user=getUser(userId);
+    public void deleteLike(String musicId){
+        User user=getUser();
         Music music = getMusic(musicId);
         likeMusicRepository.deleteByUserAndMusic(user, music);
     }
-    public LikeRes getLikeMusicRes(Long userId){
-        User user=getUser(userId);
+    public LikeRes getLikeMusicRes(){
+        User user=getUser();
 
         List<LikeMusic> withMusicByUser = likeMusicRepository.findWithMusicByUser(user);
         LikeRes likeRes=new LikeRes();
-        likeRes.setUserName(user.getNickname());
+        likeRes.setUserName(user.getUsername());
         List<Music> musicList = withMusicByUser.stream().map(lm -> lm.getMusic()).collect(Collectors.toList());
 
         List<MusicListDto> musicListDtos = getMusicListDtos(musicList);
@@ -317,8 +321,8 @@ public class MusicService {
     }
 
     @Transactional
-    public FollowAlbum addFollowAlbum(Long userId, String albumId){
-        User user=getUser(userId);
+    public FollowAlbum addFollowAlbum(String albumId){
+        User user=getUser();
         Album album = getAlbum(albumId);
 
         //이미 팔로우 한 앨범을 다시 팔로우 하는 경우 error
@@ -331,8 +335,8 @@ public class MusicService {
         return followAlbumRepository.save(follow);
     }
     @Transactional
-    public FollowSinger addFollowSinger(Long userId, String singerId){
-        User user=getUser(userId);
+    public FollowSinger addFollowSinger(String singerId){
+        User user=getUser();
         Singer singer = getSinger(singerId);
         //이미 팔로우 한 가수를 다시 팔로우 하는 경우
         user.getFollowSingerList().stream().filter(followSinger ->
@@ -344,8 +348,8 @@ public class MusicService {
         follow.createFollowSinger(user,singer);
         return followSingerRepository.save(follow);
     }
-    public List<AlbumDto> getFollowAlbumList(Long userId){
-        User user = getUser(userId);
+    public List<AlbumDto> getFollowAlbumList(){
+        User user = getUser();
         List<FollowAlbum> followAlbumList = user.getFollowAlbumList();
         List<AlbumDto> albumDtoList=new ArrayList<>();
         followAlbumList.stream().forEach(followAlbum -> {
@@ -357,8 +361,8 @@ public class MusicService {
 
         return albumDtoList;
     }
-    public List<MusicSingerDto> getFollowSingerList(Long userId){
-        User user = getUser(userId);
+    public List<MusicSingerDto> getFollowSingerList(){
+        User user = getUser();
         List<FollowSinger> followSingerList = user.getFollowSingerList();
         List<MusicSingerDto> singerDtoList=new ArrayList<>();
 
@@ -370,16 +374,16 @@ public class MusicService {
 
         return singerDtoList;
     }
-    public Result getUserPlayList(Long userId){
-        User user = getUser(userId);
+    public Result getUserPlayList(){
+        User user = getUser();
         List<Playlist> byUser = playlistRepository.findByUser(user);
         List<PlaylistCover> pList=new ArrayList<>();
         byUser.stream().forEach(playlist -> pList.add(new PlaylistCover(playlist.getId(),playlist.getName(),"X")));
-        return new Result(pList,user.getNickname());
+        return new Result(pList,user.getUsername());
     }
     @Transactional
-    public void deleteFollowAlbum(Long userId,String albumId){
-        User user=getUser(userId);
+    public void deleteFollowAlbum(String albumId){
+        User user=getUser();
         Album album = getAlbum(albumId);
         List<FollowAlbum> collect = user.getFollowAlbumList().stream().filter(followAlbum -> followAlbum.getAlbum().equals(album))
                 .collect(Collectors.toList());
@@ -389,8 +393,8 @@ public class MusicService {
         followAlbumRepository.deleteAll(collect);
     }
     @Transactional
-    public void deleteFollowSinger(Long userId,String singerId){
-        User user=getUser(userId);
+    public void deleteFollowSinger(String singerId){
+        User user=getUser();
         Singer singer = getSinger(singerId);
         List<FollowSinger> collect = user.getFollowSingerList().stream().filter(followSinger -> followSinger.getSinger().equals(singer))
                 .collect(Collectors.toList());
@@ -401,8 +405,8 @@ public class MusicService {
     }
 
     @Transactional
-    public Playlist createPlayList(Long userId){
-        User user = getUser(userId);
+    public Playlist createPlayList(){
+        User user = getUser();
         List<Playlist> byUser = playlistRepository.findByUser(user);
         int size = byUser.size()+1;
         String defaultName="내 플레이리스트 #"+size;
@@ -438,7 +442,7 @@ public class MusicService {
         //TODO : 자동생성(생성자 : spotify) 테스트 필요
         Optional<User> optUser = Optional.ofNullable(playList.getUser());
         if(optUser.isPresent()){
-            Result result= new Result(musicListDtos,optUser.get().getNickname());
+            Result result= new Result(musicListDtos,optUser.get().getUsername());
             return result;
         }else{
             Result result= new Result(musicListDtos,"homebrewtify");

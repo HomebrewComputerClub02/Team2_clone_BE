@@ -20,8 +20,7 @@ public class LibraryController {
     @GetMapping("/album")
     public ResponseEntity<MusicDto.Result> getFollowAlbum(){
         //userId를 JWT로 받아서
-        Long userId=2L;
-        List<MusicDto.AlbumDto> followAlbumList = musicService.getFollowAlbumList(userId);
+        List<MusicDto.AlbumDto> followAlbumList = musicService.getFollowAlbumList();
         MusicDto.Result result=new MusicDto.Result(followAlbumList,"albumList");
         return ResponseEntity.ok(result);
     }
@@ -30,8 +29,7 @@ public class LibraryController {
     @GetMapping("/singer")
     public ResponseEntity<MusicDto.Result> getFollowSinger(){
         //userId를 JWT로 받아서
-        Long userId=2L;
-        List<MusicDto.MusicSingerDto> followSingerList = musicService.getFollowSingerList(userId);
+        List<MusicDto.MusicSingerDto> followSingerList = musicService.getFollowSingerList();
         MusicDto.Result result=new MusicDto.Result(followSingerList,"albumList");
         return ResponseEntity.ok(result);
     }
@@ -40,7 +38,6 @@ public class LibraryController {
     @GetMapping("/playList")
     public ResponseEntity<MusicDto.Result> getLibraryPlayList(){
         //userId를 JWT로 받아서
-        Long userId=2L;
-        return ResponseEntity.ok(musicService.getUserPlayList(userId));
+        return ResponseEntity.ok(musicService.getUserPlayList());
     }
 }
