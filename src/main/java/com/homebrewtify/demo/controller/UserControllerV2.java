@@ -80,7 +80,7 @@ public class UserControllerV2 {
             userService.setRefreshToken(username,refreshJwt);
 
             Cookie cookie = new Cookie("RefreshToken",refreshJwt);
-            //cookie.setHttpOnly(true);
+            cookie.setHttpOnly(true);
             cookie.setPath("/");
             //cookie.setSecure(true);
             response.addCookie(cookie);
