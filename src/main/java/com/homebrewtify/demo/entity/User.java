@@ -22,6 +22,10 @@ public class User {
     private Long userId; // 필수
 //    private int userIdx;
 //    private String name;
+
+    private String username;
+    @Setter
+    private String refreshToken;
     private String nickname;
 //    private String phone;
     private String birth;
@@ -43,9 +47,9 @@ public class User {
         this.picture = picture;
         return this;
     }
-    public String getRoleKey(){
-        return this.role.getKey();
-    }
+//    public String getRoleKey(){
+//        return this.role.getKey();
+//    }
 
     @OneToMany(mappedBy = "user")
     @Builder.Default

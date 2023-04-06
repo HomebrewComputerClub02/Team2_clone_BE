@@ -26,7 +26,7 @@ spring:
       initialize-schema: always
   jpa:
     hibernate:
-      ddl-auto: none # update / create : 애플리케이션을 시작할 때 데이터베이스를 초기화하고 다시 테이블 생성
+      ddl-auto: update # update / create : 애플리케이션을 시작할 때 데이터베이스를 초기화하고 다시 테이블 생성
     show-sql: true
     properties:
       hibernate:
@@ -39,4 +39,7 @@ spring:
   profiles:
     include:
       - google
-
+jwt:
+  header: Authorization
+  secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
+  token-validity-in-seconds: 600 #for test, 15second

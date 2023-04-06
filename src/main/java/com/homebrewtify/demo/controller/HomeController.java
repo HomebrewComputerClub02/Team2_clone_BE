@@ -20,10 +20,8 @@ public class HomeController {
     @Operation(summary = "홈 화면 Api", description = "홈 화면에 필요한 최근 재생목록 , 랜덤 장르 플레이리스트 반환")
     @GetMapping("/home")
     public ResponseEntity<MusicDto.HomeRes> homeRes(){
-        //JWT로 사용자 아이디 획득
-        Long userId =2L;
         //해당 사용자 아이디로 play_record테이블에서 최근 재생목록 5개 뽑아옴
-        MusicDto.HomeRes res = musicService.getRecentPlayListByUser(userId);
+        MusicDto.HomeRes res = musicService.getRecentPlayListByUser();
         String uGenre1= genreService.getRandomUpperGenre();
         String uGenre2= genreService.getRandomUpperGenre(uGenre1);
         String uGenre3= genreService.getRandomUpperGenre(uGenre1,uGenre2);

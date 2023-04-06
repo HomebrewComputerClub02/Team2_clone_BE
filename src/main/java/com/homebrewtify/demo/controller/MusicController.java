@@ -33,10 +33,9 @@ public class MusicController {
     public ResponseEntity<String> notifyPlay(@Parameter(description = "재생 type(SONG,SINGER,PLAYLIST,ALBUM)")@RequestParam("playType") String playType
         ,@Parameter(description = "재생한 대상의 id(플레이리스트면 playListId, 노래 한 곡이면 musicId")@RequestParam("dataId") String dataId
     ){
-        //JWT로 사용자 인증 및 사용자의 username 이나 userId를 알아내고
-        Long userId =2L;
+
         //repo에 저장한다
-        musicService.saveRecentPlay(playType,userId,dataId);
+        musicService.saveRecentPlay(playType,dataId);
 
         //저장 중 문제가 생기면 service에서 throw하니 여기선 ok
         return ResponseEntity.ok("Saved Recent Play");
