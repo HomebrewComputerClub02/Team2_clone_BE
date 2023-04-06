@@ -32,14 +32,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+
         http.csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().formLogin().disable()
+                .httpBasic().disable()
                 .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler)
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
 
                 .and()
                 .headers().frameOptions().disable()
@@ -52,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/noAuthOk").permitAll()
                 .antMatchers("/swagger-ui/**","/swagger-ui","/swagger-resources/**","/swagger-resources",
                         "/swagger-ui","/swagger-ui.html","/v3/api-docs").permitAll()
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .oauth2Login()
                 .successHandler(oAuthSuccessHandler).userInfoEndpoint().userService(customOAuth2UserService)
