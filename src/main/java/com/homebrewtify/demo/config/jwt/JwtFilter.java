@@ -38,6 +38,7 @@ public class JwtFilter extends GenericFilterBean {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String jwt = resolveToken(httpServletRequest,1);
         String requestURI = httpServletRequest.getRequestURI();
+        logger.info("new Entered :{}",requestURI);
         //화이트리스트는 JWT체크를 하지 않음 (그냥 필터 pass)
         if(httpServletRequest.getCookies()!=null){
             Cookie[] cookies = httpServletRequest.getCookies();
