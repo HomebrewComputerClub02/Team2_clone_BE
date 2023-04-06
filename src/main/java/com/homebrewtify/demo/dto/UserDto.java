@@ -67,7 +67,7 @@ public class UserDto {
     @Builder
     @Getter
     public static class SignUpRes{ // 회원가입 응답
-        private String jwt;
+        //private String jwt;
         private Long userId;
         private String email;
         private String nickname;

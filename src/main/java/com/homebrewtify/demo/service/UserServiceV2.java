@@ -6,6 +6,7 @@ import com.homebrewtify.demo.config.jwt.TokenProvider;
 import com.homebrewtify.demo.dto.UserDto;
 import com.homebrewtify.demo.entity.User;
 import com.homebrewtify.demo.repository.UserRepository;
+import com.homebrewtify.demo.utils.Role;
 import com.homebrewtify.demo.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class UserServiceV2 {
         String username=dto.getEmail().substring(0,dto.getEmail().indexOf("@"));
         log.info("Make username:{}",username);
         User user = User.builder().email(dto.getEmail()).nickname(dto.getNickname()).birth(dto.getBirth()).gender(dto.getGender())
-                .username(username).password(dto.getPassword()).build();
+                .username(username).password(dto.getPassword()).role(Role.USER).build();
         User save = userRepository.save(user);
         return UserDto.SignUpRes.builder().userId(save.getUserId()).email(save.getEmail())
                 .nickname(save.getNickname()).gender(save.getGender()).build();

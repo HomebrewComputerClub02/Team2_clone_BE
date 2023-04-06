@@ -43,7 +43,7 @@ public class UserControllerV2 {
     @Autowired
     private UserRepository userRepository;
     @PostMapping("/signup")
-    public BaseResponse<UserDto.SignUpRes> createUser(@RequestBody @Valid UserDto.SignUpReq signUpReq){
+    public BaseResponse<UserDto.SignUpRes> createUser(@Valid@RequestBody UserDto.SignUpReq signUpReq){
         log.info("회원가입 정보 : ={}",signUpReq);
         log.info("회원가입 정보 - email ={}",signUpReq.getEmail());
         signUpReq.setPassword(bCryptPasswordEncoder.encode(signUpReq.getPassword()));
@@ -104,7 +104,7 @@ public class UserControllerV2 {
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteMember(@RequestParam("memberId") Long memberId){
         userService.deleteMember(memberId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("User Deleted",HttpStatus.OK);
     }
 
     private static void expireCookie(HttpServletResponse response,String name) {
