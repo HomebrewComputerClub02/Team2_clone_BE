@@ -39,6 +39,15 @@ public class JwtFilter extends GenericFilterBean {
         String jwt = resolveToken(httpServletRequest,1);
         String requestURI = httpServletRequest.getRequestURI();
         //화이트리스트는 JWT체크를 하지 않음 (그냥 필터 pass)
+        if(httpServletRequest.getCookies()!=null){
+            Cookie[] cookies = httpServletRequest.getCookies();
+            logger.info("cookies.length = " + cookies.length);
+            for (Cookie cookie : cookies) {
+                logger.info("cookie = " + cookie);
+                logger.info("cookie.getName() = " + cookie.getName());
+                logger.info("cookie.getValue() = " + cookie.getValue());
+            }
+        }
         if(isLoginCheckPath(requestURI)||requestURI.equals("/auth/logout")){
             //AccessToken이 있고 유효한 경우 OK
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)==1) {
