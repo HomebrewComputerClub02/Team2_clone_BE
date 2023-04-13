@@ -55,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/noAuthOk").permitAll()
                 .antMatchers("/swagger-ui/**","/swagger-ui","/swagger-resources/**","/swagger-resources",
                         "/swagger-ui","/swagger-ui.html","/v3/api-docs").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
                 .and()
                 .oauth2Login()
                 .successHandler(oAuthSuccessHandler).userInfoEndpoint().userService(customOAuth2UserService)

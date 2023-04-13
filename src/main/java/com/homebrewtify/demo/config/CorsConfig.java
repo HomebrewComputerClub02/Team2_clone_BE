@@ -19,6 +19,7 @@ public class CorsConfig {
       config.setAllowCredentials(true);
       config.setAllowedMethods(List.of(new String[]{"GET", "POST", "PUT", "DELETE", "OPTIONS"}));
       config.addAllowedOrigin("http://localhost:3000");
+      config.addAllowedOrigin("http://172.30.1.48:3000");
       config.addAllowedOrigin("http://localhost:8080");
       config.setAllowedHeaders(Collections.singletonList("*"));
       //config.addAllowedHeader(JwtFilter.AUTHORIZATION_HEADER);
