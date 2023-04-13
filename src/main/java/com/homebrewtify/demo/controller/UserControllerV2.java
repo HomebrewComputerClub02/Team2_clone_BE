@@ -46,11 +46,20 @@ public class UserControllerV2 {
     public BaseResponse<UserDto.SignUpRes> createUser(@Valid@RequestBody UserDto.SignUpReq signUpReq){
         log.info("회원가입 정보 : ={}",signUpReq);
         log.info("회원가입 정보 - email ={}",signUpReq.getEmail());
+        String password = signUpReq.getPassword();
         signUpReq.setPassword(bCryptPasswordEncoder.encode(signUpReq.getPassword()));
         log.info("회원가입 정보 - password ={}",signUpReq.getPassword());
         log.info("회원가입 정보 - birth ={}",signUpReq.getBirth());
         try{
             UserDto.SignUpRes result = userService.join(signUpReq);
+            String[] split = result.getEmail().split("@");
+            log.info("로그인아이디 :{} 비밀번호 :{}",split[0],password);
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(split[0], password);
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            String accessJwt = tokenProvider.createToken(authentication,"Access");
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add(AUTHORIZATION_HEADER, "Bearer " + accessJwt);
             log.info("회원가입 결과 : {}",result);
             return new BaseResponse<>(result);
         }catch (BaseException e){

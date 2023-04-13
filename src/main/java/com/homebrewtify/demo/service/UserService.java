@@ -50,7 +50,6 @@ public class UserService {
 
        String jwt = jwtService.createJwt(user.getUserId()); // 해당 유저의 jwt 토큰 생성
         return UserDto.SignUpRes.builder()
-                .jwt(jwt)
                 .userId(user.getUserId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
